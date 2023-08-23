@@ -1,12 +1,10 @@
 ---
-- name: Get kubeconfig
-  slurp: 
-    src: "{{ openshift_working_directory_path  }}/install-dir/auth/kubeconfig"
-  register: kubeconfig
-  
+- set_fact:
+     contents: "{{ lookup('file', '/root/lab/install-dir/auth/kubeconfig') }}"
+
 - name: Print returned information
   ansible.builtin.debug:
-    msg: "{{ kubeconfig['content'] | b64decode | string }}"
+    msg: "{{ kubeconfig }}"
 
 - meta: end_play
     
