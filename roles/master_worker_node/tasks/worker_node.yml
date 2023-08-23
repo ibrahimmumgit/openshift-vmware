@@ -220,7 +220,7 @@
 
 
 - name: Wait for install complete
-  command: openshift-install wait-for install-complete --dir={{ openshift_working_directory_path }}/install-dir --log-level debug # noqa 301
+  command: "{{ openshift_working_directory_path }}/bin/openshift-install --dir={{ openshift_working_directory_path }}/install-dir wait-for --log-level debug" # noqa 301
   register: result_complete
 
 - name: Output results from openshift-install wait-for install-complete
