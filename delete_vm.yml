@@ -4,12 +4,13 @@
   vars_files:
     - vars/main.yml
   vars:
-    morpheus_server: 
+    morpheus_server: "morpheus-5-mgt.helionit.io"
+    bearer_token: "c333e41e-5e89-41e1-94f4-87600bdab69e"
   tasks: 
-    - name: Node Deployment
-      include_role:
-        name: master_worker_node
-        tasks_from: add_morpheus_cluster.yml
+    # - name: Node Deployment
+    #   include_role:
+    #     name: master_worker_node
+    #     tasks_from: add_morpheus_cluster.yml
     - name: Reterives the cluster ID
       uri:
         url: https://{{ morpheus_server }}/api/clusters?name={{ openshift_cluster_name }}
