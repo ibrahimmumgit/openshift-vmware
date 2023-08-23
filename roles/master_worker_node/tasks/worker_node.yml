@@ -148,7 +148,17 @@
     
 - name: Restart the haproxy
   command: "systemctl restart haproxy.service" 
+
+- name: Wait for bootstrap to complete prior to starting workers
+  shell: oc get nodes  --kubeconfig={{ openshift_working_directory_path }}/install-dir/auth/kubeconfig | grep -w Ready | wc -l
+  register: nodes
+  until:   nodes.stdout|int   == master_nodes_list|count
+  retries: 5
+  delay: 300
   
+- debug:
+    var: nodes  
+    
 - name: Power-On the worker VMs
   vmware_guest:
     hostname: "{{ vcenter.host }}"
