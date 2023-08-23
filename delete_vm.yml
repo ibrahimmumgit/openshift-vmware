@@ -7,37 +7,37 @@
     morpheus_server: "morpheus-5-mgt.helionit.io"
     bearer_token: "c333e41e-5e89-41e1-94f4-87600bdab69e"
   tasks: 
-    # - name: Node Deployment
-    #   include_role:
-    #     name: master_worker_node
-    #     tasks_from: add_morpheus_cluster.yml
-    - name: Reterives the cluster ID
-      uri:
-        url: https://{{ morpheus_server }}/api/clusters?name={{ openshift_cluster_name }}
-        method: Get
-        headers:
-          Content-Type: "application/json"
-          Authorization: "Bearer {{ bearer_token }}"
-        return_content: true
-        validate_certs: false
-        status_code: 200
-        timeout: 30
-      register: webpage  
-    - set_fact:
-        cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"
+    - name: Node Deployment
+      include_role:
+        name: master_worker_node
+        tasks_from: add_morpheus_cluster.yml
+    # - name: Reterives the cluster ID
+    #   uri:
+    #     url: https://{{ morpheus_server }}/api/clusters?name={{ openshift_cluster_name }}
+    #     method: Get
+    #     headers:
+    #       Content-Type: "application/json"
+    #       Authorization: "Bearer {{ bearer_token }}"
+    #     return_content: true
+    #     validate_certs: false
+    #     status_code: 200
+    #     timeout: 30
+    #   register: webpage  
+    # - set_fact:
+    #     cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"
         
-    - name: Delethe cluster ID
-      uri:
-        url: https://{{ morpheus_server }}/api/clusters/{{ cluster_id }}?removeInstances=off&removeResources=on&preserveVolumes=off&releaseFloatingIps=on&releaseEIPs=on&force=off
-        method: DELETE
-        headers:
-          Content-Type: "application/json"
-          Authorization: "Bearer {{ bearer_token }}"
-        return_content: yes
-        validate_certs: false
-        status_code: 200
-        timeout: 30
-      register: webpage
+    # - name: Delethe cluster ID
+    #   uri:
+    #     url: https://{{ morpheus_server }}/api/clusters/{{ cluster_id }}?removeInstances=off&removeResources=on&preserveVolumes=off&releaseFloatingIps=on&releaseEIPs=on&force=off
+    #     method: DELETE
+    #     headers:
+    #       Content-Type: "application/json"
+    #       Authorization: "Bearer {{ bearer_token }}"
+    #     return_content: yes
+    #     validate_certs: false
+    #     status_code: 200
+    #     timeout: 30
+    #   register: webpage
       
     # - name: Power-Off the openshift VMs
     #   vmware_guest:
