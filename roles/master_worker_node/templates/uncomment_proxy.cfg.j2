@@ -49,10 +49,11 @@ frontend ocp4_k8s_api_fe
 backend ocp4_k8s_api_be
     balance source
     mode tcp
-    server      ocp4-bootstrap 192.168.9.44:6443 check inter 1s backup 
-    server      ocp4-control-plane-1 192.168.9.45:6443 check inter 1s
-    server      ocp4-control-plane-2 192.168.9.46:6443 check inter 1s
-    server      ocp4-control-plane-3 192.168.9.47:6443 check inter 1s
+    server      ocp4-bootstrap 192.168.9.44:6443 check
+    server      ocp4-control-plane-1 192.168.9.45:6443 check
+    server      ocp4-control-plane-2 192.168.9.46:6443 check
+    server      ocp4-control-plane-3 192.168.9.47:6443 check
+#    server      ocp4-compute-1 192.168.9.48:6443 check
 
 frontend ocp4_machine_config_server_fe
     bind :22623
@@ -63,10 +64,11 @@ frontend ocp4_machine_config_server_fe
 backend ocp4_machine_config_server_be
     balance source
     mode tcp
-    server      ocp4-bootstrap 192.168.9.44:22623 check inter 1s backup 
-    server      ocp4-control-plane-1 192.168.9.45:22623 check inter 1s
-    server      ocp4-control-plane-2 192.168.9.46:22623 check inter 1s
-    server      ocp4-control-plane-3 192.168.9.47:22623 check inter 1s
+    server      ocp4-bootstrap 192.168.9.44:22623 check
+    server      ocp4-control-plane-1 192.168.9.45:22623 check
+    server      ocp4-control-plane-2 192.168.9.46:22623 check
+    server      ocp4-control-plane-3 192.168.9.47:22623 check
+#    server      ocp4-compute-1 192.168.9.48:22623 check
 
 frontend ocp4_http_ingress_traffic_fe
     bind :80
@@ -77,10 +79,13 @@ frontend ocp4_http_ingress_traffic_fe
 backend ocp4_http_ingress_traffic_be
     balance source
     mode tcp
-    server      ocp4-compute-1 192.168.9.48:80 check inter 1s
-    server      ocp4-compute-2 192.168.9.49:80 check inter 1s
-    server      ocp4-compute-3 192.168.9.50:443 check inter 1s
-    server      ocp4-compute-4 192.168.9.51:443 check inter 1s
+    server      ocp4-control-plane-1 192.168.9.45:80 check
+    server      ocp4-control-plane-2 192.168.9.46:80 check
+    server      ocp4-control-plane-3 192.168.9.47:80 check
+    server      ocp4-compute-1 192.168.9.48:80 check
+    server      ocp4-compute-2 192.168.9.49:80 check
+    server      ocp4-compute-3 192.168.9.50:80 check
+    server      ocp4-compute-4 192.168.9.51:80 check
 
 frontend ocp4_https_ingress_traffic_fe
     bind *:443
@@ -91,7 +96,10 @@ frontend ocp4_https_ingress_traffic_fe
 backend ocp4_https_ingress_traffic_be
     balance source
     mode tcp
-    server      ocp4-compute-1 192.168.9.48:443 check inter 1s
-    server      ocp4-compute-2 192.168.9.49:443 check inter 1s
-    server      ocp4-compute-3 192.168.9.50:443 check inter 1s
-    server      ocp4-compute-4 192.168.9.51:443 check inter 1s
+    server      ocp4-control-plane-1 192.168.9.45:443 check
+    server      ocp4-control-plane-2 192.168.9.46:443 check
+    server      ocp4-control-plane-3 192.168.9.47:443 check
+    server      ocp4-compute-1 192.168.9.48:443 check
+    server      ocp4-compute-2 192.168.9.49:443 check
+    server      ocp4-compute-3 192.168.9.50:443 check
+    server      ocp4-compute-4 192.168.9.51:
