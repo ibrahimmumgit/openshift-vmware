@@ -140,14 +140,14 @@
 #   ansible.builtin.pause:
 #     minutes: 30
     
-# - name: Copy comment proxy
-#   template:
-#     src: "comment_proxy.cfg.j2"
-#     dest: "/etc/haproxy/haproxy.cfg"
-#     mode: '0664'    
+- name: Copy comment proxy
+  template:
+    src: "comment_proxy.cfg.j2"
+    dest: "/etc/haproxy/haproxy.cfg"
+    mode: '0664'    
     
-# - name: Restart the haproxy
-#   command: "systemctl restart haproxy.service" 
+- name: Restart the haproxy
+  command: "systemctl restart haproxy.service" 
   
 - name: Power-On the worker VMs
   vmware_guest:
@@ -179,19 +179,19 @@
     label: "Power Off {{ item.name }}"
 
 
-# - name: Delete Bootstrap VM
-#   vmware_guest:
-#     hostname: "{{ vcenter.host }}"
-#     username: "{{ vcenter.username }}"
-#     password: "{{ vcenter.password }}"
-#     datacenter: "{{ vcenter.datacenter }}"
-#     validate_certs: no
-#     folder: "{{ vcenter.folder }}"
-#     name: "{{ item.name }}"
-#     state: absent
-#   loop: "{{ bootstrap_nodes_list }}"
-#   loop_control:
-#     label: "Power On {{ item.name }}"
+- name: Delete Bootstrap VM
+  vmware_guest:
+    hostname: "{{ vcenter.host }}"
+    username: "{{ vcenter.username }}"
+    password: "{{ vcenter.password }}"
+    datacenter: "{{ vcenter.datacenter }}"
+    validate_certs: no
+    folder: "{{ vcenter.folder }}"
+    name: "{{ item.name }}"
+    state: absent
+  loop: "{{ bootstrap_nodes_list }}"
+  loop_control:
+    label: "Power On {{ item.name }}"
 
 
 - name: Wait for node-bootstraper csrs to approve
