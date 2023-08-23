@@ -235,6 +235,7 @@
 - name: Approve the csrs
   command: "{{ openshift_working_directory_path }}/bin/oc adm certificate approve {{ item }} --kubeconfig={{ openshift_working_directory_path }}/install-dir/auth/kubeconfig" # noqa 301
   loop: "{{ result_system['stdout_lines'] }}"
+  ignore_errors: yes
 
 
 - name: Wait for install complete
