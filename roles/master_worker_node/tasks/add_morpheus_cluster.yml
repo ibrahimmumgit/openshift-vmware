@@ -34,7 +34,7 @@
         "id": 251
       },
       "server": {
-        "name":  "{{ openshift_cluster_name }}",
+        "name":  "lab1",
         "config": {
           "apiUrl": "{{ apiurl }}",
           "apiToken": "{{ apitoken }}",
