@@ -1,8 +1,15 @@
 ---
 - name: Get kubeconfig
-  command: "cat {{ openshift_working_directory_path  }}/install-dir/auth/kubeconfig"
+  slurp: 
+    src: "{{ openshift_working_directory_path  }}/install-dir/auth/kubeconfig"
   register: kubeconfig
   
+- name: Print returned information
+  ansible.builtin.debug:
+    msg: "{{ kubeconfig['content'] | b64decode }}"
+
+- meta: end_play
+    
 - name: set_fact the ignition_value
   set_fact:
     #kubeconfig: "{{ kubeconfig.stdout }}"
