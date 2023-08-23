@@ -1,7 +1,7 @@
 - name: Approve csr
   hosts: bastion
   vars:
-    nodename: "{{ morpheus['customOptions']['nodename'] }}"
+    nodename: "{{  morpheus['customOptions']['nodename'] }}"
     kubeconfig: "{{ morpheus['customOptions']['kubeconfig'] }}"
   tasks:
     - name: oc adm cordon 
@@ -30,4 +30,26 @@
           # /home/itopr/ocppl/auth/kubeconfig
       register: output
 
-      
+    - name: Power-Off the openshift VMs
+      vmware_guest:
+        hostname: "{{ vcenter.host }}"
+        username: "{{ vcenter.username }}"
+        password: "{{ vcenter.password }}"
+        datacenter: "{{ vcenter.datacenter }}"
+        validate_certs: no
+        folder: "{{ vcenter.folder }}"
+        name: "{{  nodename }}"
+        state: poweredoff
+       ignore_errors: True
+    
+    - name: Delete openshift VM
+      vmware_guest:
+        hostname: "{{ vcenter.host }}"
+        username: "{{ vcenter.username }}"
+        password: "{{ vcenter.password }}"
+        datacenter: "{{ vcenter.datacenter }}"
+        validate_certs: no
+        folder: "{{ vcenter.folder }}"
+        name: "{{  nodename }}"
+        state: absent
+  
