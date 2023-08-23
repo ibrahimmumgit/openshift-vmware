@@ -1,8 +1,10 @@
 - name: Approve csr
   hosts: bastion
   vars:
-    nodename: "{{  morpheus['customOptions']['nodename'] }}"
-    kubeconfig: "{{ morpheus['customOptions']['kubeconfig'] }}"
+    # nodename: "{{  morpheus['customOptions']['nodename'] }}"
+    # kubeconfig: "{{ morpheus['customOptions']['kubeconfig'] }}"
+    nodename: 'ocp4-compute-3.lab.ocp.local'
+    kubeconfig: '/root/lab/install-dir/auth/kubeconfig'
   tasks:
     - name: oc adm cordon 
       ansible.builtin.command: 
@@ -40,7 +42,7 @@
         folder: "{{ vcenter.folder }}"
         name: "{{  nodename }}"
         state: poweredoff
-       ignore_errors: True
+       
     
     - name: Delete openshift VM
       vmware_guest:
