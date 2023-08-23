@@ -1,0 +1,34 @@
+---
+- name: Download the oc client binary
+  get_url:
+    url: "{{ openshift_oc_client_binary_url }}"
+    dest: "{{ openshift_working_directory_path }}/downloads/oc_client.tar.gz"
+    validate_certs: no
+  register: oc_client_download
+
+- name: Download the openshift-install binary
+  get_url:
+    url: "{{ openshift_installer_binary_url }}"
+    dest: "{{ openshift_working_directory_path }}/downloads/openshift_install.tar.gz"
+    validate_certs: no
+  register: openshift_install_download
+
+- name: Unarchive oc client
+  unarchive:
+    src: "{{ openshift_working_directory_path }}/downloads/oc_client.tar.gz"
+    dest: "{{ openshift_working_directory_path }}/bin"
+    mode: '0775'
+    remote_src: 'true'
+    exclude:
+      - README.md
+  when: oc_client_download is changed
+
+- name: Unarchive openshift-install
+  unarchive:
+    src: "{{ openshift_working_directory_path }}/downloads/openshift_install.tar.gz"
+    dest: "{{ openshift_working_directory_path }}/bin"
+    mode: '0775'
+    remote_src: 'true'
+    exclude:
+      - README.md
+  when: openshift_install_download is changed

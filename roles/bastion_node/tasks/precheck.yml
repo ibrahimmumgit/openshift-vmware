@@ -1,0 +1,32 @@
+---
+- name: Verify if install-config already run
+  stat:
+    path: "{{ openshift_working_directory_path }}"
+  register: manifest_ign
+  tags: create_manifest
+
+- debug:
+    msg: "{{ openshift_working_directory_path }} has already been initialized. Please delete it if you want to re-initialize."
+  when: manifest_ign.stat.exists
+  tags: create_manifest
+  
+- name: Delete content & directory
+  ansible.builtin.file:
+    state: absent
+    path: "{{ openshift_working_directory_path }}"
+  when: manifest_ign.stat.exists
+
+- name: Create working directory
+  file:
+    path: "{{ openshift_working_directory_path }}"
+    state: directory
+    mode: '0755'
+  tags:
+    - bastion_config
+    
+- name: Create bin, install-dir and downloads folders
+  file:
+    path: "{{ openshift_working_directory_path }}/{{ item }}"
+    state: directory
+    mode: '0755'
+  with_items: ["bin", "downloads", "install-dir"]

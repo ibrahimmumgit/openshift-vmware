@@ -1,0 +1,40 @@
+---
+- name: Delete the VM
+  hosts: bastion
+  vars_files:
+    - vars/main.yml
+  tasks: 
+    # - name: Node Deployment
+    #   include_role:
+    #     name: master_worker_node
+    #     tasks_from: add_morpheus_cluster.yml
+      
+    - name: Power-Off the openshift VMs
+      vmware_guest:
+        hostname: "{{ vcenter.host }}"
+        username: "{{ vcenter.username }}"
+        password: "{{ vcenter.password }}"
+        datacenter: "{{ vcenter.datacenter }}"
+        validate_certs: no
+        folder: "{{ vcenter.folder }}"
+        name: "{{ item.name }}"
+        state: poweredoff
+      loop: "{{ bootstrap_nodes_list + master_nodes_list + worker_nodes_list }}"
+      loop_control:
+        label: "Power Off {{ item.name }}"
+      ignore_errors: True
+    
+    - name: Delete openshift VM
+      vmware_guest:
+        hostname: "{{ vcenter.host }}"
+        username: "{{ vcenter.username }}"
+        password: "{{ vcenter.password }}"
+        datacenter: "{{ vcenter.datacenter }}"
+        validate_certs: no
+        folder: "{{ vcenter.folder }}"
+        name: "{{ item.name }}"
+        state: absent
+      loop: "{{ bootstrap_nodes_list + master_nodes_list  + worker_nodes_list }}"
+      loop_control:
+        label: "Power On {{ item.name }}"
+

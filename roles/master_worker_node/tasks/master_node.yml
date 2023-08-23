@@ -1,0 +1,125 @@
+---
+- name: Copy haproxy.cfg
+  template:
+    src: "uncomment_proxy.cfg.j2"
+    dest: "/etc/haproxy/haproxy.cfg"
+    mode: '0664'    
+    
+- name: Restart the haproxy
+  command: "systemctl restart haproxy.service" 
+    
+- name: Get ignition_value file contents
+  command: "cat {{ master_node.ignition_file_path  }}"
+  register: ignition
+  
+- name: set_fact the ignition_value
+  set_fact:
+    ignition_value: "{{ ignition.stdout }}"
+
+- name: Clone from openshift cluster
+  vmware_guest:
+    hostname: "{{ vcenter.host }}"
+    username: "{{ vcenter.username }}"
+    password: "{{ vcenter.password }}"
+    validate_certs: no
+    datacenter: "{{ vcenter.datacenter }}"
+    folder: "{{ vcenter.folder }}"
+    cluster: "{{ vcenter.cluster }}"
+    template: "{{ openshift_template_name }}"
+    #name: "{{ item.name }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
+    name: "{{ item.name }}"
+    state: "poweredoff"
+    disk:
+    - datastore: "{{ vcenter.default_datastore }}"
+      type: "{{ master_node.disk.type }}"
+      size_gb: "{{ master_node.disk.size | default(120) }}"
+    hardware:
+      memory_mb: "{{ master_node.ram | default(16384) }}"
+      memory_reservation_lock: true
+      memory_reservation: "{{ bootstrap_node.ram }}"
+      num_cpus: "{{ master_node.cpus | default(4) }}"
+    #networks:
+    #- name: "{{ vcenter.network }}"
+    wait_for_ip_address: no
+    customvalues: 
+      # - key: "sched.cpu.latencySensitivity"
+      #   value: "normal"
+      - key: "guestinfo.afterburn.initrd.network-kargs"
+        value: "ip={{ item.ipaddr }}::{{ vcenter.gateway }}:{{ vcenter.netmask }}:{{ item.name }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}:ens192:off:{{ vcenter.dns }}"               
+      - key: "disk.EnableUUID"
+        value: "TRUE"
+      - key: "guestinfo.ignition.config.data.encoding"
+        value: "base64"        
+      - key: "guestinfo.ignition.config.data"
+        value: "{{ ignition_value }}"
+      #   value: "ip={{ item.ipaddr }}::{{ vcenter.gateway  }}:{{ vcenter.netmask }}:{{ item.name }}:none:{{ vcenter.dns  }}"
+  loop: "{{ master_nodes_list  }}"
+#   register: clone_task
+#   async: 60
+#   poll: 0
+
+# - name: Wait for clone machine task to finish
+#   async_status:
+#     id: "{{ item.ansible_job_id }}"
+#     #jid: "{{ item.ansible_job_id }}" # ansible version > 2.8
+#   register: alias_task
+#   retries: 20
+#   delay: 2
+#   until: alias_task.finished
+#   loop: "{{clone_task.results}}"
+  
+- name: Fetch the node details
+  vmware_guest_info:
+    hostname: "{{ vcenter.host }}"
+    username: "{{ vcenter.username }}"
+    password: "{{ vcenter.password }}"
+    validate_certs: no
+    datacenter: "{{ vcenter.datacenter }}"
+    name: "{{ item.name }}"
+  loop: "{{ master_nodes_list }}"  
+  register: result 
+
+- name: Master Nodes mac address
+  debug:
+    msg: "{{ item.instance.hw_eth0.macaddress }}"
+  loop: "{{ result.results }}"
+  
+- name: Create master Nodes List
+  set_fact:
+    master_nodes_list : >-
+      {{ master_nodes_list | default([]) |
+         map('combine', {'macaddress': item.instance.hw_eth0.macaddress}) | list }}
+  loop: "{{ result.results }}"
+    
+- debug:
+    var: master_nodes_list 
+   
+- name: Configure network for bootstrap and master VMs
+  vmware_guest_network:
+    hostname: "{{ vcenter.host }}"
+    username: "{{ vcenter.username }}"
+    password: "{{ vcenter.password }}"
+    datacenter: "{{ vcenter.datacenter }}"
+    validate_certs: no
+    name: "{{ item.name }}"
+    networks:
+      - name: "{{ vcenter.network }}"
+        #manual_mac: "{{ item.macaddress }}"
+        label: "Network adapter 1"
+        state: present
+        start_connected: true
+  with_items: "{{ master_nodes_list }}"
+  
+- name: Set the state of bootstrap node to poweron
+  vmware_guest:
+    hostname: "{{ vcenter.host }}"
+    username: "{{ vcenter.username }}"
+    password: "{{ vcenter.password }}"
+    guest_id: "rhel8_64Guest"
+    validate_certs: no
+    folder: "{{ vcenter.folder }}"
+    #name: "{{ item.name }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
+    name: "{{ item.name }}"
+    #state: "powered-on"
+    state: "poweredon"
+  with_items: "{{ master_nodes_list }}"
