@@ -11,6 +11,7 @@
     #   include_role:
     #     name: master_worker_node
     #     tasks_from: add_morpheus_cluster.yml
+    
     - name: Reterives the cluster ID
       uri:
         url: https://{{ morpheus_server }}/api/clusters?name={{ openshift_cluster_name }}
