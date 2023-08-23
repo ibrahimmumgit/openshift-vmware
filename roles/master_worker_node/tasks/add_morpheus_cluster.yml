@@ -5,7 +5,7 @@
   
 - name: set_fact the ignition_value
   set_fact:
-    kubeconfig: "{{ kubeconfig.stdout }}"
+    #kubeconfig: "{{ kubeconfig.stdout }}"
     apiurl: "https://api.lab.ocp.local:6443"
     apitoken: "sha256~NMBoFU_G__YMxwk8a34MiUyeKbMj6xjuynryCwJBCrg"
     bearer_token: "c333e41e-5e89-41e1-94f4-87600bdab69e"
@@ -26,7 +26,7 @@
       "group": {
         "id": 1143
       },
-      "name": "lab1" ,
+      "name": "lab" ,
       "cloud": {
         "id": 235
       },
@@ -34,7 +34,7 @@
         "id": 251
       },
       "server": {
-        "name":  "lab1",
+        "name":  "lab",
         "config": {
           "apiUrl": "{{ apiurl }}",
           "apiToken": "{{ apitoken }}",
