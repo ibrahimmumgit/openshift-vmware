@@ -1,5 +1,9 @@
 - name: VM provision
   hosts: bastion
+  vars:
+    nodename: "{{  morpheus['customOptions']['nodename'] }}"
+    IPaddress: "{{ morpheus['customOptions']['Ipaddress'] }}"
+    kubeconfig: "{{ morpheus['customOptions']['kubeconfig'] }}"
   tasks:
     - name: Clone from openshift cluster
       vmware_guest:
@@ -12,7 +16,7 @@
         cluster: "{{ vcenter.cluster }}"
         template: "{{ openshift_template_name }}"
         #name: "{{ item.name }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
-        name: "{{ item.name }}"
+        name: "{{ nodename }}"
         state: "poweredoff"
         disk:
         - datastore: "{{ vcenter.default_datastore }}"
@@ -30,15 +34,15 @@
           - key: "sched.cpu.latencySensitivity"
             value: "normal"
           - key: "guestinfo.afterburn.initrd.network-kargs"
-            value: "ip={{ item.ipaddr }}::{{ vcenter.gateway }}:{{ vcenter.netmask }}:{{ item.name }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}:ens192:off:{{ vcenter.dns }}"               
+            value: "ip={{ item.ipaddr }}::{{ vcenter.gateway }}:{{ vcenter.netmask }}:{{ nodename }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}:ens192:off:{{ vcenter.dns }}"               
           - key: "disk.EnableUUID"
             value: "TRUE"
           - key: "guestinfo.ignition.config.data.encoding"
             value: "base64"        
           - key: "guestinfo.ignition.config.data"
             value: "{{ ignition_value }}"
-          #   value: "ip={{ item.ipaddr }}::{{ vcenter.gateway  }}:{{ vcenter.netmask }}:{{ item.name }}:none:{{ vcenter.dns  }}"
-      loop: "{{ worker_nodes_list }}"
+          #   value: "ip={{ IPaddress }}::{{ vcenter.gateway  }}:{{ vcenter.netmask }}:{{ item.name }}:none:{{ vcenter.dns  }}"
+
       
     - name: Configure network for worker nodes
       vmware_guest_network:
@@ -47,14 +51,13 @@
         password: "{{ vcenter.password }}"
         datacenter: "{{ vcenter.datacenter }}"
         validate_certs: no
-        name: "{{ item.name }}"
+        name: "{{ nodename }}"
         networks:
           - name: "{{ vcenter.network }}"
             #manual_mac: "{{ item.macaddress }}"
             label: "Network adapter 1"
             state: present
             start_connected: true
-      with_items: "{{ worker_nodes_list }}"
 
     - name: Power-On the worker VMs
       vmware_guest:
@@ -64,11 +67,8 @@
         datacenter: "{{ vcenter.datacenter }}"
         validate_certs: no
         folder: "{{ vcenter.folder }}"
-        name: "{{ item.name }}"
+        name: "{{ nodename }}"
         state: poweredon
-      loop: "{{ worker_nodes_list | default([]) }}"
-      loop_control:
-        label: "Power On {{ item.name }}"   
         
     - name: Pause for 10 minutes 
       ansible.builtin.pause:
@@ -82,6 +82,4 @@
           # /home/itopr/ocppl/auth/kubeconfig
       register: output
 
-    - debug: 
-        var: output
 
