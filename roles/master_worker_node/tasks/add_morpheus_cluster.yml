@@ -5,13 +5,13 @@
   register: slurped_user_data
 - name: Decode data and store as fact # You can skip this if you want to use the right hand side directly...
   set_fact:
-    user_data: "{{ slurped_user_data.content | b64decode | to_yaml }}"
+    user_data: "{{ slurped_user_data.content | b64decode  }}"
     
 - name: Print returned information
   ansible.builtin.debug:
     msg: "{{ user_data }}"
 
-- meta: end_play
+
     
 - name: set_fact the ignition_value
   set_fact:
@@ -48,7 +48,7 @@
         "config": {
           "apiUrl": "{{ apiurl }}",
           "apiToken": "{{ apitoken }}",
-          "serviceAccess": "{{ kubeconfig }}"
+          "serviceAccess": "{{ slurped_user_data.content | b64decode }}"
         },
         "plan": {
           "id": 113,
