@@ -1,1 +1,33 @@
+- name: Approve csr
+  hosts: bastion
+  vars:
+    nodename: "{{ morpheus['customOptions']['nodename'] }}"
+    kubeconfig: "{{ morpheus['customOptions']['kubeconfig'] }}"
+  tasks:
+    - name: oc adm cordon 
+      ansible.builtin.command: 
+        cmd: "oc adm cordon {{ nodename }}"
+      environment: 
+        KUBECONFIG: "{{ kubeconfig }}"
+      register: output
 
+    - debug: 
+        var: output 
+    
+    - name: oc adm drain
+      ansible.builtin.command:
+        cmd: "oc adm drain  {{ nodename }} --ignore-daemonsets --delete-emptydir-data"
+      environment: 
+        KUBECONFIG: "{{ kubeconfig }}"
+          # /home/itopr/ocppl/auth/kubeconfig
+      register: output
+
+    - name: oc delete node
+      ansible.builtin.command:
+        cmd: "oc delete node {{ nodename }}"   
+      environment: 
+        KUBECONFIG: "{{ kubeconfig }}"
+          # /home/itopr/ocppl/auth/kubeconfig
+      register: output
+
+      
