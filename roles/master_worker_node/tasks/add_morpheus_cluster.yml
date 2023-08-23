@@ -7,8 +7,8 @@
   set_fact:
     #kubeconfig: "{{ kubeconfig.stdout }}"
     apiurl: "https://api.lab.ocp.local:6443"
-    kubeconfig: "test"
-    apitoken: "sha256~o-uR9Qz6Tg3B2p9nPMK_FAKlcdIqqjSxnVaeXRwfXiw"
+    kubeconfig: "{{ kubeconfig }}"
+    apitoken: "sha256~NMBoFU_G__YMxwk8a34MiUyeKbMj6xjuynryCwJBCrg"
     bearer_token: "c333e41e-5e89-41e1-94f4-87600bdab69e"
 
 - name: Create External kuberenets cluster
