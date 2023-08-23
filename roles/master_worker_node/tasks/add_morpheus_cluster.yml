@@ -9,7 +9,10 @@
     apiurl: "https://api.lab.ocp.local:6443"
     apitoken: "sha256~NMBoFU_G__YMxwk8a34MiUyeKbMj6xjuynryCwJBCrg"
     bearer_token: "c333e41e-5e89-41e1-94f4-87600bdab69e"
-
+    
+- debug:
+    var: kubeconfig
+    
 - name: Create External kuberenets cluster
   uri:
     url:  https://morpheus-5-mgt.helionit.io/api/clusters
