@@ -1,11 +1,8 @@
 ---
 - name: Load data
-  slurp:
-    src: '/root/lab/install-dir/auth/kubeconfig'
-  register: slurped_user_data
-- name: Decode data and store as fact # You can skip this if you want to use the right hand side directly...
-  set_fact:
-    user_data: "{{ slurped_user_data.content | b64decode  }}"
+  command: "cat /root/lab/install-dir/auth/kubeconfig"
+  register: kubeconfig
+
     
 - name: Print returned information
   ansible.builtin.debug:
@@ -48,7 +45,7 @@
         "config": {
           "apiUrl": "{{ apiurl }}",
           "apiToken": "{{ apitoken }}",
-          "serviceAccess": "{{ slurped_user_data.content | b64decode }}"
+          "serviceAccess": "{{ kubeconfig }}"
         },
         "plan": {
           "id": 113,
