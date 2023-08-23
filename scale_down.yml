@@ -1,5 +1,7 @@
 - name: Approve csr
   hosts: bastion
+  vars_files:
+    - vars/main.yml
   vars:
     # nodename: "{{  morpheus['customOptions']['nodename'] }}"
     # kubeconfig: "{{ morpheus['customOptions']['kubeconfig'] }}"
