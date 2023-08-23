@@ -1,10 +1,15 @@
 ---
-- set_fact:
-     contents: "{{ lookup('file', '/root/lab/install-dir/auth/kubeconfig') }}"
-
+- name: Load data
+  slurp:
+    src: '/root/lab/install-dir/auth/kubeconfig'
+  register: slurped_user_data
+- name: Decode data and store as fact # You can skip this if you want to use the right hand side directly...
+  set_fact:
+    user_data: "{{ slurped_user_data.content | b64decode | toyaml }}"
+    
 - name: Print returned information
   ansible.builtin.debug:
-    msg: "{{ kubeconfig }}"
+    msg: "{{ user_data }}"
 
 - meta: end_play
     
