@@ -1,100 +1,100 @@
 ---
-- name: Get ignition_value file contents
-  command: "cat {{ worker_node.ignition_file_path }}"
-  register: ignition
+# - name: Get ignition_value file contents
+#   command: "cat {{ worker_node.ignition_file_path }}"
+#   register: ignition
   
-- name: set_fact the ignition_value
-  set_fact:
-    ignition_value: "{{ ignition.stdout }}"
+# - name: set_fact the ignition_value
+#   set_fact:
+#     ignition_value: "{{ ignition.stdout }}"
 
-- name: Clone from openshift cluster
-  vmware_guest:
-    hostname: "{{ vcenter.host }}"
-    username: "{{ vcenter.username }}"
-    password: "{{ vcenter.password }}"
-    validate_certs: no
-    datacenter: "{{ vcenter.datacenter }}"
-    folder: "{{ vcenter.folder }}"
-    cluster: "{{ vcenter.cluster }}"
-    template: "{{ openshift_template_name }}"
-    #name: "{{ item.name }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
-    name: "{{ item.name }}"
-    state: "poweredoff"
-    disk:
-    - datastore: "{{ vcenter.default_datastore }}"
-      type: "{{ worker_node.disk.type }}"
-      size_gb: "{{ worker_node.disk.size | default(120) }}"
-    hardware:
-      memory_mb: "{{ worker_node.ram | default(16384) }}"
-      memory_reservation_lock: true
-      memory_reservation: "{{ bootstrap_node.ram }}"
-      num_cpus: "{{ worker_node.cpus | default(4) }}"
-    #networks:
-    #- name: "{{ vcenter.network }}"
-    wait_for_ip_address: no
-    customvalues: 
-      - key: "sched.cpu.latencySensitivity"
-        value: "normal"
-      - key: "guestinfo.afterburn.initrd.network-kargs"
-        value: "ip={{ item.ipaddr }}::{{ vcenter.gateway }}:{{ vcenter.netmask }}:{{ item.name }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}:ens192:off:{{ vcenter.dns }}"               
-      - key: "disk.EnableUUID"
-        value: "TRUE"
-      - key: "guestinfo.ignition.config.data.encoding"
-        value: "base64"        
-      - key: "guestinfo.ignition.config.data"
-        value: "{{ ignition_value }}"
-      #   value: "ip={{ item.ipaddr }}::{{ vcenter.gateway  }}:{{ vcenter.netmask }}:{{ item.name }}:none:{{ vcenter.dns  }}"
-  loop: "{{ worker_nodes_list }}"
+# - name: Clone from openshift cluster
+#   vmware_guest:
+#     hostname: "{{ vcenter.host }}"
+#     username: "{{ vcenter.username }}"
+#     password: "{{ vcenter.password }}"
+#     validate_certs: no
+#     datacenter: "{{ vcenter.datacenter }}"
+#     folder: "{{ vcenter.folder }}"
+#     cluster: "{{ vcenter.cluster }}"
+#     template: "{{ openshift_template_name }}"
+#     #name: "{{ item.name }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
+#     name: "{{ item.name }}"
+#     state: "poweredoff"
+#     disk:
+#     - datastore: "{{ vcenter.default_datastore }}"
+#       type: "{{ worker_node.disk.type }}"
+#       size_gb: "{{ worker_node.disk.size | default(120) }}"
+#     hardware:
+#       memory_mb: "{{ worker_node.ram | default(16384) }}"
+#       memory_reservation_lock: true
+#       memory_reservation: "{{ bootstrap_node.ram }}"
+#       num_cpus: "{{ worker_node.cpus | default(4) }}"
+#     #networks:
+#     #- name: "{{ vcenter.network }}"
+#     wait_for_ip_address: no
+#     customvalues: 
+#       - key: "sched.cpu.latencySensitivity"
+#         value: "normal"
+#       - key: "guestinfo.afterburn.initrd.network-kargs"
+#         value: "ip={{ item.ipaddr }}::{{ vcenter.gateway }}:{{ vcenter.netmask }}:{{ item.name }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}:ens192:off:{{ vcenter.dns }}"               
+#       - key: "disk.EnableUUID"
+#         value: "TRUE"
+#       - key: "guestinfo.ignition.config.data.encoding"
+#         value: "base64"        
+#       - key: "guestinfo.ignition.config.data"
+#         value: "{{ ignition_value }}"
+#       #   value: "ip={{ item.ipaddr }}::{{ vcenter.gateway  }}:{{ vcenter.netmask }}:{{ item.name }}:none:{{ vcenter.dns  }}"
+#   loop: "{{ worker_nodes_list }}"
     
-- name: Fetch the node details
-  vmware_guest_info:
-    hostname: "{{ vcenter.host }}"
-    username: "{{ vcenter.username }}"
-    password: "{{ vcenter.password }}"
-    validate_certs: no
-    datacenter: "{{ vcenter.datacenter }}"
-    name: "{{ item.name }}"
-  loop: "{{ master_nodes_list }}"  
-  register: result 
+# - name: Fetch the node details
+#   vmware_guest_info:
+#     hostname: "{{ vcenter.host }}"
+#     username: "{{ vcenter.username }}"
+#     password: "{{ vcenter.password }}"
+#     validate_certs: no
+#     datacenter: "{{ vcenter.datacenter }}"
+#     name: "{{ item.name }}"
+#   loop: "{{ master_nodes_list }}"  
+#   register: result 
   
-- name: worker node mac address
-  debug:
-    msg: "{{ item.instance.hw_eth0.macaddress }}"
-  loop: "{{ result.results }}"
+# - name: worker node mac address
+#   debug:
+#     msg: "{{ item.instance.hw_eth0.macaddress }}"
+#   loop: "{{ result.results }}"
   
-- name: Create Worker Nodes List
-  set_fact:
-    worker_nodes_list  : >-
-      {{ worker_nodes_list  | default([]) |
-         map('combine', {'macaddress': item.instance.hw_eth0.macaddress}) | list }}
-  loop: "{{ result.results }}"
+# - name: Create Worker Nodes List
+#   set_fact:
+#     worker_nodes_list  : >-
+#       {{ worker_nodes_list  | default([]) |
+#          map('combine', {'macaddress': item.instance.hw_eth0.macaddress}) | list }}
+#   loop: "{{ result.results }}"
     
-- debug:
-    var: worker_nodes_list  
+# - debug:
+#     var: worker_nodes_list  
    
-- name: Configure network for worker nodes
-  vmware_guest_network:
-    hostname: "{{ vcenter.host }}"
-    username: "{{ vcenter.username }}"
-    password: "{{ vcenter.password }}"
-    datacenter: "{{ vcenter.datacenter }}"
-    validate_certs: no
-    name: "{{ item.name }}"
-    networks:
-      - name: "{{ vcenter.network }}"
-        #manual_mac: "{{ item.macaddress }}"
-        label: "Network adapter 1"
-        state: present
-        start_connected: true
-  with_items: "{{ worker_nodes_list }}"
+# - name: Configure network for worker nodes
+#   vmware_guest_network:
+#     hostname: "{{ vcenter.host }}"
+#     username: "{{ vcenter.username }}"
+#     password: "{{ vcenter.password }}"
+#     datacenter: "{{ vcenter.datacenter }}"
+#     validate_certs: no
+#     name: "{{ item.name }}"
+#     networks:
+#       - name: "{{ vcenter.network }}"
+#         #manual_mac: "{{ item.macaddress }}"
+#         label: "Network adapter 1"
+#         state: present
+#         start_connected: true
+#   with_items: "{{ worker_nodes_list }}"
 
 
-- name: Wait for bootstrap to complete prior to starting workers
-  command: "{{ openshift_working_directory_path }}/bin/openshift-install --dir={{ openshift_working_directory_path }}/install-dir wait-for bootstrap-complete --log-level debug" # noqa 301
-  retries: 3
-  delay: 10
-  register: result_bootstrap
-  until: result_bootstrap.rc == 0
+# - name: Wait for bootstrap to complete prior to starting workers
+#   command: "{{ openshift_working_directory_path }}/bin/openshift-install --dir={{ openshift_working_directory_path }}/install-dir wait-for bootstrap-complete --log-level debug" # noqa 301
+#   retries: 3
+#   delay: 10
+#   register: result_bootstrap
+#   until: result_bootstrap.rc == 0
 
 # - name: Wait for bootstrap to complete prior to starting workers
 #   ansible.builtin.pause:
@@ -140,73 +140,79 @@
 #   ansible.builtin.pause:
 #     minutes: 30
     
-- name: Copy comment proxy
-  template:
-    src: "comment_proxy.cfg.j2"
-    dest: "/etc/haproxy/haproxy.cfg"
-    mode: '0664'    
+# - name: Copy comment proxy
+#   template:
+#     src: "comment_proxy.cfg.j2"
+#     dest: "/etc/haproxy/haproxy.cfg"
+#     mode: '0664'    
     
-- name: Restart the haproxy
-  command: "systemctl restart haproxy.service" 
+# - name: Restart the haproxy
+#   command: "systemctl restart haproxy.service" 
 
-- name: Wait for bootstrap to complete prior to starting workers
-  shell: oc get nodes  --kubeconfig={{ openshift_working_directory_path }}/install-dir/auth/kubeconfig | grep -w Ready | wc -l
-  register: nodes
-  until:   nodes.stdout|int   == master_nodes_list|count
-  retries: 5
-  delay: 300
+# - name: Wait for bootstrap to complete prior to starting workers
+#   shell: oc get nodes  --kubeconfig={{ openshift_working_directory_path }}/install-dir/auth/kubeconfig | grep -w Ready | wc -l
+#   register: nodes
+#   until:   nodes.stdout|int   == master_nodes_list|count
+#   retries: 5
+#   delay: 300
   
-- debug:
-    var: nodes  
+# - debug:
+#     var: nodes  
     
-- name: Power-On the worker VMs
-  vmware_guest:
-    hostname: "{{ vcenter.host }}"
-    username: "{{ vcenter.username }}"
-    password: "{{ vcenter.password }}"
-    datacenter: "{{ vcenter.datacenter }}"
-    validate_certs: no
-    folder: "{{ vcenter.folder }}"
-    name: "{{ item.name }}"
-    state: poweredon
-  loop: "{{ worker_nodes_list | default([]) }}"
-  loop_control:
-    label: "Power On {{ item.name }}"
+# - name: Power-On the worker VMs
+#   vmware_guest:
+#     hostname: "{{ vcenter.host }}"
+#     username: "{{ vcenter.username }}"
+#     password: "{{ vcenter.password }}"
+#     datacenter: "{{ vcenter.datacenter }}"
+#     validate_certs: no
+#     folder: "{{ vcenter.folder }}"
+#     name: "{{ item.name }}"
+#     state: poweredon
+#   loop: "{{ worker_nodes_list | default([]) }}"
+#   loop_control:
+#     label: "Power On {{ item.name }}"
 
 
-- name: Power-Off the bootstrap VMs
-  vmware_guest:
-    hostname: "{{ vcenter.host }}"
-    username: "{{ vcenter.username }}"
-    password: "{{ vcenter.password }}"
-    datacenter: "{{ vcenter.datacenter }}"
-    validate_certs: no
-    folder: "{{ vcenter.folder }}"
-    name: "{{ item.name }}"
-    state: poweredoff
-  loop: "{{ bootstrap_nodes_list }}"
-  loop_control:
-    label: "Power Off {{ item.name }}"
+# - name: Power-Off the bootstrap VMs
+#   vmware_guest:
+#     hostname: "{{ vcenter.host }}"
+#     username: "{{ vcenter.username }}"
+#     password: "{{ vcenter.password }}"
+#     datacenter: "{{ vcenter.datacenter }}"
+#     validate_certs: no
+#     folder: "{{ vcenter.folder }}"
+#     name: "{{ item.name }}"
+#     state: poweredoff
+#   loop: "{{ bootstrap_nodes_list }}"
+#   loop_control:
+#     label: "Power Off {{ item.name }}"
 
 
-- name: Delete Bootstrap VM
-  vmware_guest:
-    hostname: "{{ vcenter.host }}"
-    username: "{{ vcenter.username }}"
-    password: "{{ vcenter.password }}"
-    datacenter: "{{ vcenter.datacenter }}"
-    validate_certs: no
-    folder: "{{ vcenter.folder }}"
-    name: "{{ item.name }}"
-    state: absent
-  loop: "{{ bootstrap_nodes_list }}"
-  loop_control:
-    label: "Power On {{ item.name }}"
+# - name: Delete Bootstrap VM
+#   vmware_guest:
+#     hostname: "{{ vcenter.host }}"
+#     username: "{{ vcenter.username }}"
+#     password: "{{ vcenter.password }}"
+#     datacenter: "{{ vcenter.datacenter }}"
+#     validate_certs: no
+#     folder: "{{ vcenter.folder }}"
+#     name: "{{ item.name }}"
+#     state: absent
+#   loop: "{{ bootstrap_nodes_list }}"
+#   loop_control:
+#     label: "Power On {{ item.name }}"
 
 
 - name: Wait for node-bootstraper csrs to approve
   shell: "{{ openshift_working_directory_path }}/bin/oc get csr -o json --kubeconfig={{ openshift_working_directory_path }}/install-dir/auth/kubeconfig | jq -r '.items[] | select(.status == {}) | .metadata.name'" # noqa 301 306
   register: result_csr
+
+- debug:
+    var: result_csr
+
+- meta: end_play
+
   until: result_csr['stdout_lines']|count == worker_nodes_list|count
   retries: 60
   delay: 60
