@@ -49,7 +49,7 @@ frontend ocp4_k8s_api_fe
 backend ocp4_k8s_api_be
     balance source
     mode tcp
-#    Server      ocp4-bootstrap 192.168.9.44:6443 check
+#    server      ocp4-bootstrap 192.168.9.44:6443 check
     server      ocp4-control-plane-1 192.168.9.45:6443 check
     server      ocp4-control-plane-2 192.168.9.46:6443 check
     server      ocp4-control-plane-3 192.168.9.47:6443 check
