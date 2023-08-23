@@ -2,13 +2,6 @@
 - name: Load data
   command: "cat /root/lab/install-dir/auth/kubeconfig"
   register: kubeconfig
-
-    
-- name: Print returned information
-  ansible.builtin.debug:
-    msg: "{{ user_data }}"
-
-
     
 - name: set_fact the ignition_value
   set_fact:
