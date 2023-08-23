@@ -6,7 +6,7 @@
   
 - name: Print returned information
   ansible.builtin.debug:
-    msg: "{{ kubeconfig['content'] | b64decode }}"
+    msg: "{{ kubeconfig['content'] | b64decode | string }}"
 
 - meta: end_play
     
