@@ -1,1 +1,87 @@
+- name: VM provision
+  hosts: bastion
+  tasks:
+    - name: Clone from openshift cluster
+      vmware_guest:
+        hostname: "{{ vcenter.host }}"
+        username: "{{ vcenter.username }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: no
+        datacenter: "{{ vcenter.datacenter }}"
+        folder: "{{ vcenter.folder }}"
+        cluster: "{{ vcenter.cluster }}"
+        template: "{{ openshift_template_name }}"
+        #name: "{{ item.name }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
+        name: "{{ item.name }}"
+        state: "poweredoff"
+        disk:
+        - datastore: "{{ vcenter.default_datastore }}"
+          type: "{{ worker_node.disk.type }}"
+          size_gb: "{{ worker_node.disk.size | default(120) }}"
+        hardware:
+          memory_mb: "{{ worker_node.ram | default(16384) }}"
+          memory_reservation_lock: true
+          memory_reservation: "{{ bootstrap_node.ram }}"
+          num_cpus: "{{ worker_node.cpus | default(4) }}"
+        #networks:
+        #- name: "{{ vcenter.network }}"
+        wait_for_ip_address: no
+        customvalues: 
+          - key: "sched.cpu.latencySensitivity"
+            value: "normal"
+          - key: "guestinfo.afterburn.initrd.network-kargs"
+            value: "ip={{ item.ipaddr }}::{{ vcenter.gateway }}:{{ vcenter.netmask }}:{{ item.name }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}:ens192:off:{{ vcenter.dns }}"               
+          - key: "disk.EnableUUID"
+            value: "TRUE"
+          - key: "guestinfo.ignition.config.data.encoding"
+            value: "base64"        
+          - key: "guestinfo.ignition.config.data"
+            value: "{{ ignition_value }}"
+          #   value: "ip={{ item.ipaddr }}::{{ vcenter.gateway  }}:{{ vcenter.netmask }}:{{ item.name }}:none:{{ vcenter.dns  }}"
+      loop: "{{ worker_nodes_list }}"
+      
+    - name: Configure network for worker nodes
+      vmware_guest_network:
+        hostname: "{{ vcenter.host }}"
+        username: "{{ vcenter.username }}"
+        password: "{{ vcenter.password }}"
+        datacenter: "{{ vcenter.datacenter }}"
+        validate_certs: no
+        name: "{{ item.name }}"
+        networks:
+          - name: "{{ vcenter.network }}"
+            #manual_mac: "{{ item.macaddress }}"
+            label: "Network adapter 1"
+            state: present
+            start_connected: true
+      with_items: "{{ worker_nodes_list }}"
+
+    - name: Power-On the worker VMs
+      vmware_guest:
+        hostname: "{{ vcenter.host }}"
+        username: "{{ vcenter.username }}"
+        password: "{{ vcenter.password }}"
+        datacenter: "{{ vcenter.datacenter }}"
+        validate_certs: no
+        folder: "{{ vcenter.folder }}"
+        name: "{{ item.name }}"
+        state: poweredon
+      loop: "{{ worker_nodes_list | default([]) }}"
+      loop_control:
+        label: "Power On {{ item.name }}"   
+        
+    - name: Pause for 10 minutes 
+      ansible.builtin.pause:
+        minutes: 10
+    
+    - name: approve csr pending request
+      ansible.builtin.shell: |
+        oc get csr -o name | xargs oc adm certificate approve     
+      environment: 
+        KUBECONFIG: "{{ kubeconfig }}"
+          # /home/itopr/ocppl/auth/kubeconfig
+      register: output
+
+    - debug: 
+        var: output
 
