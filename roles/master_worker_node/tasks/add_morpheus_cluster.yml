@@ -26,7 +26,7 @@
       "group": {
         "id": 1143
       },
-      "name": "{{ openshift_cluster_name }}" ,
+      "name": "lab1" ,
       "cloud": {
         "id": 235
       },
