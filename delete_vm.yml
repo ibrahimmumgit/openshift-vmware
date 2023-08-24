@@ -25,9 +25,10 @@
         timeout: 30
       register: webpage  
     - debug:
-        var: webpage
+        var: (webpage.content | from_json).size
     - set_fact:
-        cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"
+        //cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"
+        size: "{{ (webpage.content | from_json).clusters[0].id }}"
       when: webpage.rc == 0
         
     - name: Delethe cluster ID
