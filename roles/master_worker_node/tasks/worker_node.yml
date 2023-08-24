@@ -211,7 +211,7 @@
   ansible.builtin.shell: |
     oc get csr -ojson | jq -r '.items[] | select(.status == {} ) | .metadata.name' | xargs oc adm certificate approve     
   environment: 
-    KUBECONFIG: {{ openshift_working_directory_path }}/install-dir/auth/kubeconfig 
+    KUBECONFIG: "{{ openshift_working_directory_path }}/install-dir/auth/kubeconfig"
     
 - name: Wait for worker to complete
   ansible.builtin.pause:
