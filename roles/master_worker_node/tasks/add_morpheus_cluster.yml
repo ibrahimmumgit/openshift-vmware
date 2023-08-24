@@ -1,7 +1,11 @@
 ---
-- name: Load data
-  command: "cat /root/lab/install-dir/auth/kubeconfig"
-  register: kubeconfig
+- name: Fetch Kubeconfig
+  command: oc config view --raw  --kubeconfig={{ openshift_working_directory_path }}/install-dir/auth/kubeconfig
+  register: kubeconfig_output
+
+- name: Store Kubeconfig in a variable
+  set_fact:
+    kubeconfig: "{{ kubeconfig_output.stdout }}"
 
 - name: Fetch Kubeadmin Token
   shell: oc -n kube-system get secret kubeadmin -o jsonpath='{.data.token}' | base64 -d
