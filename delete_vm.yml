@@ -24,7 +24,7 @@
         status_code: 200
         timeout: 30
       register: webpage  
-      i
+      
     - set_fact:
         cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"
       when: webpage.rc == 0
