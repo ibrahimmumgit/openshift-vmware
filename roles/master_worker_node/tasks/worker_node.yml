@@ -176,6 +176,7 @@
 - name: Approve the csrs
   command: "{{ openshift_working_directory_path }}/bin/oc adm certificate approve {{ item }} --kubeconfig={{ kubeconfig_path }}/install-dir/auth/kubeconfig" # noqa 301
   loop: "{{ result_csr['stdout_lines'] }}"
+  ignore_errors: true
 
 - name: Wait for system:node csrs to approve
   shell: "{{ openshift_working_directory_path }}/bin/oc get csr -o json --kubeconfig={{ kubeconfig_path }}/install-dir/auth/kubeconfig | jq -r '.items[] | select(.status == {}) | .metadata.name'"  # noqa 301 306
@@ -193,7 +194,8 @@
 - name: Wait for install complete
   command: openshift-install wait-for install-complete --dir={{ kubeconfig_path }}/install-dir --log-level debug 
   register: result_complete
+  ignore_errors: true
 
-- name: Output results from openshift-install wait-for install-complete
-  debug:
-   msg: "{{ result_complete.stderr | regex_findall('level=info.*') | list }}"
+# - name: Output results from openshift-install wait-for install-complete
+#   debug:
+#    msg: "{{ result_complete.stderr | regex_findall('level=info.*') | list }}"
