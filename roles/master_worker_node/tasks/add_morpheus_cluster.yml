@@ -5,7 +5,7 @@
 
 - name: Store Kubeconfig in a variable
   set_fact:
-    kubeconfig: "{{ kubeconfig_output.stdout }}"
+    kubeconfig: "{{ kubeconfig_output.stdout | regex_replace('\n', '')  }}"
 
 - name: Fetch Kubeadmin Token
   shell: oc -n kube-system get secret kubeadmin -o jsonpath='{.data.token}' | base64 -d
