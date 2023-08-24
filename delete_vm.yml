@@ -24,8 +24,10 @@
         status_code: 200
         timeout: 30
       register: webpage  
+      i
     - set_fact:
         cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"
+      when: webpage.rc == 0
         
     - name: Delethe cluster ID
       uri:
@@ -39,6 +41,8 @@
         status_code: 200
         timeout: 30
       register: webpage
+      when: webpage.rc == 0
+      
       
     - name: Power-Off the openshift VMs
       vmware_guest:
@@ -50,7 +54,7 @@
         folder: "{{ vcenter.folder }}"
         name: "{{ item.name }}"
         state: poweredoff
-      loop: "{{  master_nodes_list + worker_nodes_list }}"
+      loop: "{{  bootstrap_nodes_list + master_nodes_list + worker_nodes_list }}"
       loop_control:
         label: "Power Off {{ item.name }}"
       ignore_errors: True
@@ -65,7 +69,8 @@
         folder: "{{ vcenter.folder }}"
         name: "{{ item.name }}"
         state: absent
-      loop: "{{  master_nodes_list  + worker_nodes_list }}"
+      loop: "{{  bootstrap_nodes_list + master_nodes_list  + worker_nodes_list }}"
       loop_control:
         label: "Power On {{ item.name }}"
+      ignore_errors: True
 
