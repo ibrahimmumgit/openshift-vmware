@@ -2,6 +2,14 @@
 - name: Load data
   command: "cat /root/lab/install-dir/auth/kubeconfig"
   register: kubeconfig
+
+- name: Fetch Kubeadmin Token
+  shell: oc -n kube-system get secret kubeadmin -o jsonpath='{.data.token}' | base64 -d
+  register: kubeadmin_token
+
+- name: Print Kubeadmin Token
+  debug:
+    var: kubeadmin_token.stdout
     
 - name: set_fact the ignition_value
   set_fact:
