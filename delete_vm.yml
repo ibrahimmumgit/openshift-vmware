@@ -11,74 +11,81 @@
     #   include_role:
     #     name: master_worker_node
     #     tasks_from: add_morpheus_cluster.yml
-    
-    - name: Reterives the cluster ID
-      uri:
-        url: https://{{ morpheus_server }}/api/clusters?name={{ openshift_cluster_name }}
-        method: Get
-        headers:
-          Content-Type: "application/json"
-          Authorization: "Bearer {{ bearer_token }}"
-        return_content: true
-        validate_certs: false
-        status_code: 200
-        timeout: 30
-      register: webpage  
-    - debug:
-        var: webpage.content
-    - set_fact:
-        # cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"
-        size: "{{ (webpage.content | from_json).meta.size }}"
-      # when: webpage.rc == 0
-    - debug:
-        var: size    
+    - name: Load data
+      path: "cat /root/lab/install-dir/auth/kubeconfig"
+      register: file_content
 
-    - set_fact:
-        cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"       
-      when: size == 1
-      
-    - name: Delethe cluster ID
-      uri:
-        url: https://{{ morpheus_server }}/api/clusters/{{ cluster_id }}?removeInstances=off&removeResources=on&preserveVolumes=off&releaseFloatingIps=on&releaseEIPs=on&force=off
-        method: DELETE
-        headers:
-          Content-Type: "application/json"
-          Authorization: "Bearer {{ bearer_token }}"
-        return_content: yes
-        validate_certs: false
-        status_code: 200
-        timeout: 30
-      register: webpage
-      when: size == 1
-      
-      
-    - name: Power-Off the openshift VMs
-      vmware_guest:
-        hostname: "{{ vcenter.host }}"
-        username: "{{ vcenter.username }}"
-        password: "{{ vcenter.password }}"
-        datacenter: "{{ vcenter.datacenter }}"
-        validate_certs: no
-        folder: "{{ vcenter.folder }}"
-        name: "{{ item.name }}"
-        state: poweredoff
-      loop: "{{  bootstrap_nodes_list + master_nodes_list + worker_nodes_list }}"
-      loop_control:
-        label: "Power Off {{ item.name }}"
-      ignore_errors: True
+    - name: Display file content
+      debug:
+        var: file_content.content
     
-    - name: Delete openshift VM
-      vmware_guest:
-        hostname: "{{ vcenter.host }}"
-        username: "{{ vcenter.username }}"
-        password: "{{ vcenter.password }}"
-        datacenter: "{{ vcenter.datacenter }}"
-        validate_certs: no
-        folder: "{{ vcenter.folder }}"
-        name: "{{ item.name }}"
-        state: absent
-      loop: "{{  bootstrap_nodes_list + master_nodes_list  + worker_nodes_list }}"
-      loop_control:
-        label: "Power On {{ item.name }}"
-      ignore_errors: True
+    # - name: Reterives the cluster ID
+    #   uri:
+    #     url: https://{{ morpheus_server }}/api/clusters?name={{ openshift_cluster_name }}
+    #     method: Get
+    #     headers:
+    #       Content-Type: "application/json"
+    #       Authorization: "Bearer {{ bearer_token }}"
+    #     return_content: true
+    #     validate_certs: false
+    #     status_code: 200
+    #     timeout: 30
+    #   register: webpage  
+    # - debug:
+    #     var: webpage.content
+    # - set_fact:
+    #     # cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"
+    #     size: "{{ (webpage.content | from_json).meta.size }}"
+    #   # when: webpage.rc == 0
+    # - debug:
+    #     var: size    
+
+    # - set_fact:
+    #     cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"       
+    #   when: size == 1
+      
+    # - name: Delethe cluster ID
+    #   uri:
+    #     url: https://{{ morpheus_server }}/api/clusters/{{ cluster_id }}?removeInstances=off&removeResources=on&preserveVolumes=off&releaseFloatingIps=on&releaseEIPs=on&force=off
+    #     method: DELETE
+    #     headers:
+    #       Content-Type: "application/json"
+    #       Authorization: "Bearer {{ bearer_token }}"
+    #     return_content: yes
+    #     validate_certs: false
+    #     status_code: 200
+    #     timeout: 30
+    #   register: webpage
+    #   when: size == 1
+      
+      
+    # - name: Power-Off the openshift VMs
+    #   vmware_guest:
+    #     hostname: "{{ vcenter.host }}"
+    #     username: "{{ vcenter.username }}"
+    #     password: "{{ vcenter.password }}"
+    #     datacenter: "{{ vcenter.datacenter }}"
+    #     validate_certs: no
+    #     folder: "{{ vcenter.folder }}"
+    #     name: "{{ item.name }}"
+    #     state: poweredoff
+    #   loop: "{{  bootstrap_nodes_list + master_nodes_list + worker_nodes_list }}"
+    #   loop_control:
+    #     label: "Power Off {{ item.name }}"
+    #   ignore_errors: True
+    
+    # - name: Delete openshift VM
+    #   vmware_guest:
+    #     hostname: "{{ vcenter.host }}"
+    #     username: "{{ vcenter.username }}"
+    #     password: "{{ vcenter.password }}"
+    #     datacenter: "{{ vcenter.datacenter }}"
+    #     validate_certs: no
+    #     folder: "{{ vcenter.folder }}"
+    #     name: "{{ item.name }}"
+    #     state: absent
+    #   loop: "{{  bootstrap_nodes_list + master_nodes_list  + worker_nodes_list }}"
+    #   loop_control:
+    #     label: "Power On {{ item.name }}"
+    #   ignore_errors: True
 
