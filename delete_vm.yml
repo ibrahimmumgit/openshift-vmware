@@ -18,7 +18,7 @@
 
     - name: Display file content
       debug:
-        var: file_content.content
+        var: file_content
     
     # - name: Reterives the cluster ID
     #   uri:
