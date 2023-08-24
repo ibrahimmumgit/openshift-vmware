@@ -12,7 +12,8 @@
     #     name: master_worker_node
     #     tasks_from: add_morpheus_cluster.yml
     - name: Load data
-      path: "cat /root/lab/install-dir/auth/kubeconfig"
+      file:
+        path: "/root/lab/install-dir/auth/kubeconfig"
       register: file_content
 
     - name: Display file content
