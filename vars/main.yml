@@ -15,6 +15,16 @@ openshift_pull_secret: "{\"auths\":{\"cloud.openshift.com\":{\"auth\":\"b3BlbnNo
 openshift_template_name: "coreos-new-4.13"
 
 ## OpenShift network variables (for customization)
+openshift_working_directory_name: "{{ openshift_cluster_name }}"
+ignition_files_path: "{{ ansible_env.HOME }}/{{ openshift_working_directory_name }}"
+
+openshift_common_config_params:
+  - key: "sched.cpu.latencySensitivity"
+    value: "high"
+  - key: "disk.EnableUUID"
+    value: "TRUE"
+  - key: "guestinfo.ignition.config.data.encoding"
+    value: "base64"
 
 openshift_networking:
   pod_cidr: "10.128.0.0/14"
@@ -93,7 +103,6 @@ ssh_key_name: "ocp_ssh_key"
 
 #install config generation
 openshift_binary_dir: "/usr/bin"
-openshift_working_directory_name: "{{ openshift_cluster_name }}"
 openshift_working_directory_path: "{{ ansible_env.HOME }}/{{ openshift_working_directory_name }}"
 openshift_binaries_url: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ openshift_version }}"
 

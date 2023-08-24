@@ -1,10 +1,25 @@
-- name: VM provision
+- name: Add Worker node
   hosts: bastion
+  vars_files:
+    - vars/main.yml
   vars:
-    nodename: "{{  morpheus['customOptions']['nodename'] }}"
-    IPaddress: "{{ morpheus['customOptions']['Ipaddress'] }}"
-    kubeconfig: "{{ morpheus['customOptions']['kubeconfig'] }}"
+    # nodename: "{{  morpheus['customOptions']['nodename'] }}"
+    # IPaddress: "{{ morpheus['customOptions']['Ipaddress'] }}"
+    # kubeconfig: "{{ morpheus['customOptions']['kubeconfig'] }}"
+
+    ipaddr: "192.168.9.50"
+    nodename: "ocp4-compute-3"
+    kubeconfig: '/root/lab/install-dir/auth/kubeconfig'
+
   tasks:
+    - name: Get ignition_value file contents
+      command: "cat {{ worker_node.ignition_file_path }}"
+      register: ignition
+    
+    - name: set_fact the ignition_value
+      set_fact:
+        ignition_value: "{{ ignition.stdout }}"
+        
     - name: Clone from openshift cluster
       vmware_guest:
         hostname: "{{ vcenter.host }}"
@@ -34,7 +49,7 @@
           - key: "sched.cpu.latencySensitivity"
             value: "normal"
           - key: "guestinfo.afterburn.initrd.network-kargs"
-            value: "ip={{ item.ipaddr }}::{{ vcenter.gateway }}:{{ vcenter.netmask }}:{{ nodename }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}:ens192:off:{{ vcenter.dns }}"               
+            value: "ip={{ ipaddr }}::{{ vcenter.gateway }}:{{ vcenter.netmask }}:{{ nodename }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}:ens192:off:{{ vcenter.dns }}"               
           - key: "disk.EnableUUID"
             value: "TRUE"
           - key: "guestinfo.ignition.config.data.encoding"
@@ -70,16 +85,16 @@
         name: "{{ nodename }}"
         state: poweredon
         
-    - name: Pause for 10 minutes 
-      ansible.builtin.pause:
-        minutes: 10
-    
-    - name: approve csr pending request
-      ansible.builtin.shell: |
-        oc get csr -o name | xargs oc adm certificate approve     
-      environment: 
-        KUBECONFIG: "{{ kubeconfig }}"
-          # /home/itopr/ocppl/auth/kubeconfig
-      register: output
+    - name: Wait for node-bootstraper csrs to approve
+      shell: "{{ openshift_working_directory_path }}/bin/oc get csr -o json --kubeconfig={{ kubeconfig }} | jq -r '.items[] | select(.status == {}) | .metadata.name'" # noqa 301 306
+      register: result_csr
+      until: result_csr['stdout_lines']|count == worker_nodes_list|count
+      retries: 60
+      delay: 60
+      ignore_errors: true
+
+    - name: Approve the csrs
+      command: "{{ openshift_working_directory_path }}/bin/oc adm certificate approve {{ item }} --kubeconfig={{ kubeconfig_path }}" # noqa 301
+      loop: "{{ result_csr['stdout_lines'] }}"
 
 

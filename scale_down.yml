@@ -1,38 +1,34 @@
-- name: Approve csr
+- name: Delete worker node
   hosts: bastion
   vars_files:
     - vars/main.yml
   vars:
     # nodename: "{{  morpheus['customOptions']['nodename'] }}"
     # kubeconfig: "{{ morpheus['customOptions']['kubeconfig'] }}"
-    nodename: 'ocp4-compute-3.lab.ocp.local'
+    nodename: "ocp4-compute-3"
     kubeconfig: '/root/lab/install-dir/auth/kubeconfig'
   tasks:
     - name: oc adm cordon 
-      ansible.builtin.command: 
-        cmd: "oc adm cordon {{ nodename }}"
+      command: "oc adm cordon {{ nodename }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
       environment: 
         KUBECONFIG: "{{ kubeconfig }}"
       register: output
+      ignore_errors: TRUE
 
-    - debug: 
-        var: output 
-    
+
     - name: oc adm drain
-      ansible.builtin.command:
-        cmd: "oc adm drain  {{ nodename }} --ignore-daemonsets --delete-emptydir-data"
+      command: "oc adm drain  {{ nodename }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }} --ignore-daemonsets --delete-emptydir-data"
       environment: 
         KUBECONFIG: "{{ kubeconfig }}"
-          # /home/itopr/ocppl/auth/kubeconfig
       register: output
+      ignore_errors: TRUE
 
     - name: oc delete node
-      ansible.builtin.command:
-        cmd: "oc delete node {{ nodename }}"   
+      command: "oc delete node  {{ nodename }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
       environment: 
         KUBECONFIG: "{{ kubeconfig }}"
-          # /home/itopr/ocppl/auth/kubeconfig
       register: output
+      ignore_errors: TRUE
 
     - name: Power-Off the openshift VMs
       vmware_guest:
