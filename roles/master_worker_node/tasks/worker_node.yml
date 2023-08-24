@@ -221,7 +221,7 @@
   ansible.builtin.shell: |
     oc get csr -ojson | jq -r '.items[] | select(.status == {} ) | .metadata.name' | xargs oc adm certificate approve     
   environment: 
-    KUBECONFIG: {{ openshift_working_directory_path }}/install-dir/auth/kubeconfig  
+    KUBECONFIG: "{{ openshift_working_directory_path }}/install-dir/auth/kubeconfig" 
     
 - name: Wait for node-bootstraper csrs to approve
   shell: "{{ openshift_working_directory_path }}/bin/oc get csr -o json --kubeconfig={{ openshift_working_directory_path }}/install-dir/auth/kubeconfig | jq -r '.items[] | select(.status == {}) | .metadata.name'" # noqa 301 306
