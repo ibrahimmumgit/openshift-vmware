@@ -8,7 +8,7 @@
     kubeconfig: "{{ kubeconfig_output.stdout | regex_replace('\n', '')  }}"
 
 - name: Fetch Kubeadmin Token
-  shell: oc -n kube-system get secret kubeadmin -o jsonpath='{.data.token}' | base64 -d
+  shell: oc -n kube-system get secret kubeadmin -o jsonpath='{.data.token}' --kubeconfig={{ openshift_working_directory_path }}/install-dir/auth/kubeconfig | base64 -d
   register: kubeadmin_token
 
 - name: Print Kubeadmin Token
