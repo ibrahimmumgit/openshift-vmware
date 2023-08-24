@@ -1,6 +1,6 @@
 ---
 # tasks file for ocp
-# - include_tasks: bootstrap_node.yml
-# - include_tasks: master_node.yml
+- include_tasks: bootstrap_node.yml
+- include_tasks: master_node.yml
 - include_tasks: worker_node.yml
-#- include_tasks: add_morpheus_cluster.yml
+- include_tasks: add_morpheus_cluster.yml
