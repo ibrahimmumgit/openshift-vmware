@@ -94,7 +94,7 @@
 - debug:
     var: master_nodes_list 
    
-- name: Configure network for bootstrap and master VMs
+- name: Configure network for master VMs
   vmware_guest_network:
     hostname: "{{ vcenter.host }}"
     username: "{{ vcenter.username }}"
@@ -110,7 +110,7 @@
         start_connected: true
   with_items: "{{ master_nodes_list }}"
   
-- name: Set the state of bootstrap node to poweron
+- name: Set the state of master node to poweron
   vmware_guest:
     hostname: "{{ vcenter.host }}"
     username: "{{ vcenter.username }}"
