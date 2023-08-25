@@ -23,12 +23,12 @@
     
   register: manifest_creation
 
-- name: unset mastersSchedulable
-  replace:
-    path: "{{ openshift_working_directory_path }}/install-dir/manifests/cluster-scheduler-02-config.yml"
-    regexp: '(mastersSchedulable:) true'
-    replace: '\1 false'
-  tags: create_manifest
+# - name: unset mastersSchedulable
+#   replace:
+#     path: "{{ openshift_working_directory_path }}/install-dir/manifests/cluster-scheduler-02-config.yml"
+#     regexp: '(mastersSchedulable:) true'
+#     replace: '\1 false'
+#   tags: create_manifest
   
 - name: Remove Master Machine manifests
   file:

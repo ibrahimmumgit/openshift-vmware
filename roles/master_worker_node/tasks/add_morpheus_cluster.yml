@@ -3,23 +3,64 @@
   command: oc config view --raw  --kubeconfig={{ openshift_working_directory_path }}/install-dir/auth/kubeconfig
   register: kubeconfig_output
 
+- name: Fetch kubeadmin password
+  command: "cat {{ openshift_working_directory_path }}/install-dir/auth/kubeadmin-password"
+  register: kubeadminpassword_output
+
 - name: Store Kubeconfig in a variable
   set_fact:
-    kubeconfig: "{{ kubeconfig_output.stdout | regex_replace('\n', '')  }}"
+    kubeadminpassowrd: "{{ kubeadminpassword_output.stdout }}"
 
-- name: Fetch Kubeadmin Token
-  shell: oc -n kube-system get secret kubeadmin -o jsonpath='{.data.token}' --kubeconfig={{ openshift_working_directory_path }}/install-dir/auth/kubeconfig | base64 -d
-  register: kubeadmin_token
+# - name: Get OAuth Token
+#   uri:
+#     url: "https://oauth-openshift.apps.lab.ocp.local/oauth/arize?response_type=token&client_id=openshift-challenging-client"
+#     method: POST
+#     body_format: form-urlencoded
+#     return_content: true
+#     validate_certs: false
+#     user: "kubeadmin"
+#     password: "{{ kubeadminpassowrd }}"
+#     force_basic_auth: true
+#     # body:
+#     #   username: "kubeadmin"
+#     #   password: "{{ kubeadminpassowrd }}"
+#     #   #client_id: "openshift-challenging-client"
+#     #   #client_secret: "your_client_secret"
+#   register: token_response
 
-- name: Print Kubeadmin Token
+
+- name: Perform HTTP request
+  uri:
+    url: "https://oauth-openshift.apps.lab.ocp.local/oauth/authorize?response_type=token&client_id=openshift-challenging-client"
+    method: GET
+    headers:
+      X-CSRF-Token: "xxx"
+    user: kubeadmin
+    password: "{{ kubeadminpassowrd }}"
+    return_content: yes
+    status_code: 200
+    validate_certs: false
+  register: response
+
+- name: Extract OAuth Token
+  set_fact:
+    ssh: "{{ response.url.split('access_token=')}}"
+
+- name: Split variable before a value
+  set_fact:
+    kubeadmin_token: "{{ ssh[1].split('&')[0] }}"
+
+- name: Display split result
   debug:
-    var: kubeadmin_token.stdout
-    
+    var: kubeadmin_token
+ 
+
+
 - name: set_fact the ignition_value
   set_fact:
-    #kubeconfig: "{{ kubeconfig.stdout }}"
+    kubeconfig: "{{ kubeconfig_output.stdout | regex_replace('\n', '')  }}"
     apiurl: "https://api.lab.ocp.local:6443"
-    apitoken: "{{ kubeadmin_token.stdout }}"
+    apitoken: "{{ kubeadmin_token }}"
     bearer_token: "c333e41e-5e89-41e1-94f4-87600bdab69e"
     
 - debug:
