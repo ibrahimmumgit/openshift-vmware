@@ -189,13 +189,11 @@
   debug:
    msg: "{{ result_complete.stderr | regex_findall('level=info.*') | list }}"
 
-- name: Wait for worker to complete 
-  command: 
-    cmd: oc get nodes 
-  environment: 
-    KUBECONFIG: "{{ openshift_working_directory_path }}/install-dir/auth/kubeconfig"
+- name: Wait for bootstrap to complete prior to starting workers
+  shell: oc get nodes  --kubeconfig={{ openshift_working_directory_path }}/install-dir/auth/kubeconfig | grep -w NotReady | wc -l
   register: nodes
-  until:      
-    - '" NotReady "  not in nodes.stdout'      
-  retries: 10
-  delay: 420
+  until:   nodes.stdout|int   == 0
+  retries: 5
+  delay: 300
+- debug:
+    var: nodes  
