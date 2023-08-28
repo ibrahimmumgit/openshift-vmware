@@ -3,13 +3,15 @@
   vars_files:
     - vars/main.yml
   vars:
-    # nodename: "{{  morpheus['customOptions']['nodename'] }}"
-    # kubeconfig: "{{ morpheus['customOptions']['kubeconfig'] }}"
-    nodename: "ocp4-compute-3"
-    kubeconfig: '/root/lab/install-dir/auth/kubeconfig'
+    morpheus_server: "morpheus-5-mgt.helionit.io"
+    bearer_token: "c333e41e-5e89-41e1-94f4-87600bdab69e"
+    nodename: "{{  morpheus['customOptions']['nodename'] }}"
+    cluster_name: "{{ morpheus['customOptions']['cluster_name'] }}"
+    # nodename: "ocp4-compute-3"
+    kubeconfig: "{{ ansible_env.HOME }}/{{ cluster_name }}/install-dir/auth/kubeconfig"
   tasks:
     - name: oc adm cordon 
-      command: "oc adm cordon {{ nodename }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
+      command: "oc adm cordon {{ nodename }}.{{ cluster_name }}.{{ openshift_base_domain }}"
       environment: 
         KUBECONFIG: "{{ kubeconfig }}"
       register: output
@@ -17,7 +19,7 @@
 
 
     - name: oc adm drain
-      command: "oc adm drain  {{ nodename }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }} --ignore-daemonsets --delete-emptydir-data"
+      command: "oc adm drain  {{ nodename }}.{{ cluster_name }}.{{ openshift_base_domain }} --ignore-daemonsets --delete-emptydir-data"
       environment: 
         KUBECONFIG: "{{ kubeconfig }}"
       register: output
@@ -52,4 +54,43 @@
         folder: "{{ vcenter.folder }}"
         name: "{{  nodename }}"
         state: absent
+
+    - name: Reterives the cluster ID
+      uri:
+        url: https://{{ morpheus_server }}/api/clusters?name={{ openshift_cluster_name }}
+        method: Get
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ bearer_token }}"
+        return_content: true
+        validate_certs: false
+        status_code: 200
+        timeout: 30
+      register: webpage  
+    - debug:
+        var: webpage.content
+    - set_fact:
+        # cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"
+        size: "{{ (webpage.content | from_json).meta.size }}"
+      # when: webpage.rc == 0
+    - debug:
+        var: size    
+
+    - set_fact:
+        cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"       
+      when: size == "1"
+      
+    - name: Delete the cluster ID
+      uri:
+        url: https://{{ morpheus_server }}/api/clusters/{{ cluster_id }}?removeInstances=off&removeResources=on&preserveVolumes=off&releaseFloatingIps=on&releaseEIPs=on&force=off
+        method: DELETE
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ bearer_token }}"
+        return_content: yes
+        validate_certs: false
+        status_code: 200
+        timeout: 30
+      register: webpage
+      when: size == "1"
   
