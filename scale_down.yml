@@ -80,10 +80,10 @@
         cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"       
       when: size == "1"
       
-    - name: Delete the cluster ID
+    - name: Update the cluster
       uri:
-        url: https://{{ morpheus_server }}/api/clusters/{{ cluster_id }}?removeInstances=off&removeResources=on&preserveVolumes=off&releaseFloatingIps=on&releaseEIPs=on&force=off
-        method: DELETE
+        url: https://{{ morpheus_server }}/api/clusters/{{ cluster_id }}
+        method: PUT
         headers:
           Content-Type: "application/json"
           Authorization: "Bearer {{ bearer_token }}"
