@@ -153,7 +153,10 @@
 
 - set_fact:
     kubeconfig_path:  "{{ openshift_working_directory_path }}"
-
+    
+- name: Wait for node-bootstraper csrs to approve
+  ansible.builtin.pause:
+    minutes: 20
 
 - name: Wait for node-bootstraper csrs to approve
   shell: "{{ openshift_working_directory_path }}/bin/oc get csr -o json --kubeconfig={{ kubeconfig_path }}/install-dir/auth/kubeconfig | jq -r '.items[] | select(.status == {}) | .metadata.name'" # noqa 301 306
