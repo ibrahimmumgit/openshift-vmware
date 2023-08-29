@@ -153,13 +153,13 @@
 
 - set_fact:
     kubeconfig_path:  "{{ openshift_working_directory_path }}"
-    kubeconfig_string: "{{ openshift_working_directory_path }}/bin/oc get csr -o json --kubeconfig={{ openshift_working_directory_path }}/install-dir/auth/kubeconfig"
+    #kubeconfig_string: "{{ openshift_working_directory_path }}/bin/oc get csr -o json --kubeconfig={{ openshift_working_directory_path }}/install-dir/auth/kubeconfig"
 # - name: Wait for node-bootstraper csrs to approve
 #   ansible.builtin.pause:
 #     minutes: 20
 
 - name: Wait for node-bootstraper csrs to approve
-  shell: "{{ kubeconfig_string }} | jq -r '.items[] | select(.status == {}) | .metadata.name'"
+  shell: "{{ openshift_working_directory_path }}/bin/oc get csr -o json --kubeconfig={{ kubeconfig_path }}/install-dir/auth/kubeconfig | jq -r '.items[] | select(.status == {}) | .metadata.name'"
   register: result_csr
   until: result_csr['stdout_lines']|count == worker_nodes_list|count
   retries: 60
