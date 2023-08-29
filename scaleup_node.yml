@@ -4,7 +4,7 @@
     - vars/main.yml
   vars:
     # nodename: "{{  morpheus['customOptions']['nodename'] }}"
-    # IPaddress: "{{ morpheus['customOptions']['Ipaddress'] }}"
+    ipaddr: "{{ morpheus['customOptions']['ipaddress'] }}"
     # kubeconfig: "{{ morpheus['customOptions']['kubeconfig'] }}"
     nodename: "{{  morpheus['customOptions']['nodename'] }}"
     cluster_name: "{{ morpheus['customOptions']['cluster_name'] }}"
