@@ -151,8 +151,8 @@
 #     label: "Power On {{ item.name }}"
 
 
-# - set_fact:
-#     kubeconfig_path:  "{{ openshift_working_directory_path }}"
+- set_fact:
+    kubeconfig_path:  "{{ openshift_working_directory_path }}"
 
 
 - name: Wait for node-bootstraper csrs to approve
