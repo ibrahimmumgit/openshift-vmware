@@ -184,7 +184,7 @@
   ignore_errors: true
 
 - name: Wait for install complete
-  command: openshift-install wait-for install-complete --dir={{ kubeconfig_path }}/install-dir --log-level debug 
+  command: {{ openshift_working_directory_path }}/bin/openshift-install wait-for install-complete --dir={{ kubeconfig_path }}/install-dir --log-level debug 
   register: result_complete
   ignore_errors: true
 
