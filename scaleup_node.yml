@@ -87,6 +87,7 @@
         folder: "{{ vcenter.folder }}"
         name: "{{ nodename }}"
         state: poweredon
+        wait_for_ip_address: yes
         
     - name: Wait for node-bootstraper csrs to approve
       shell: "{{ openshift_working_directory_path }}/bin/oc get csr -o json --kubeconfig={{ kubeconfig_path }} | jq -r '.items[] | select(.status == {}) | .metadata.name'" # noqa 301 306
