@@ -160,7 +160,6 @@
 
 - name: Wait for node-bootstraper csrs to approve
   shell: "{{ kubeconfig_string }} | jq -r '.items[] | select(.status == {}) | .metadata.name'"
-  /root/lab/bin/oc get csr -o json --kubeconfig=/root/lab/install-dir/auth/kubeconfig
   register: result_csr
   until: result_csr['stdout_lines']|count == worker_nodes_list|count
   retries: 60
