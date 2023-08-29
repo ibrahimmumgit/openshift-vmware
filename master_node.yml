@@ -1,0 +1,10 @@
+---
+- name: Master node Deployment
+  hosts: bastion
+  vars_files:
+    - vars/main.yml
+  tasks:         
+    - name: Master node Deployment
+      include_role:
+        name: master_worker_node
+        tasks_from: master_node.yml
