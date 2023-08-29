@@ -9,7 +9,7 @@
     nodename: "{{  morpheus['customOptions']['nodename'] }}"
     cluster_name: "{{ morpheus['customOptions']['cluster_name'] }}"
     # nodename: "ocp4-compute-3"
-    kubeconfig: "{{ ansible_env.HOME }}/{{ cluster_name }}/install-dir/auth/kubeconfig"
+    kubeconfig_path: "{{ ansible_env.HOME }}/{{ cluster_name }}/install-dir/auth/kubeconfig"
     # ipaddr: "192.168.9.51"
     # nodename: "ocp4-compute-4"
     # kubeconfig_path: '/root/lab/install-dir/auth/kubeconfig'
