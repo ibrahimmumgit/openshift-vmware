@@ -10,87 +10,87 @@
     # nodename: "ocp4-compute-3"
     kubeconfig: "{{ ansible_env.HOME }}/{{ cluster_name }}/install-dir/auth/kubeconfig"
   tasks:
-    # - name: oc adm cordon 
-    #   command: "oc adm cordon {{ nodename }}.{{ cluster_name }}.{{ openshift_base_domain }}"
-    #   environment: 
-    #     KUBECONFIG: "{{ kubeconfig }}"
-    #   register: output
-    #   ignore_errors: TRUE
+    - name: oc adm cordon 
+      command: "oc adm cordon {{ nodename }}.{{ cluster_name }}.{{ openshift_base_domain }}"
+      environment: 
+        KUBECONFIG: "{{ kubeconfig }}"
+      register: output
+      ignore_errors: TRUE
 
 
-    # - name: oc adm drain
-    #   command: "oc adm drain  {{ nodename }}.{{ cluster_name }}.{{ openshift_base_domain }} --ignore-daemonsets --delete-emptydir-data"
-    #   environment: 
-    #     KUBECONFIG: "{{ kubeconfig }}"
-    #   register: output
-    #   ignore_errors: TRUE
+    - name: oc adm drain
+      command: "oc adm drain  {{ nodename }}.{{ cluster_name }}.{{ openshift_base_domain }} --ignore-daemonsets --delete-emptydir-data"
+      environment: 
+        KUBECONFIG: "{{ kubeconfig }}"
+      register: output
+      ignore_errors: TRUE
 
-    # - name: oc delete node
-    #   command: "oc delete node  {{ nodename }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
-    #   environment: 
-    #     KUBECONFIG: "{{ kubeconfig }}"
-    #   register: output
-    #   ignore_errors: TRUE
+    - name: oc delete node
+      command: "oc delete node  {{ nodename }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
+      environment: 
+        KUBECONFIG: "{{ kubeconfig }}"
+      register: output
+      ignore_errors: TRUE
 
-    # - name: Power-Off the openshift VMs
-    #   vmware_guest:
-    #     hostname: "{{ vcenter.host }}"
-    #     username: "{{ vcenter.username }}"
-    #     password: "{{ vcenter.password }}"
-    #     datacenter: "{{ vcenter.datacenter }}"
-    #     validate_certs: no
-    #     folder: "{{ vcenter.folder }}"
-    #     name: "{{  nodename }}"
-    #     state: poweredoff
+    - name: Power-Off the openshift VMs
+      vmware_guest:
+        hostname: "{{ vcenter.host }}"
+        username: "{{ vcenter.username }}"
+        password: "{{ vcenter.password }}"
+        datacenter: "{{ vcenter.datacenter }}"
+        validate_certs: no
+        folder: "{{ vcenter.folder }}"
+        name: "{{  nodename }}"
+        state: poweredoff
        
     
-    # - name: Delete openshift VM
-    #   vmware_guest:
-    #     hostname: "{{ vcenter.host }}"
-    #     username: "{{ vcenter.username }}"
-    #     password: "{{ vcenter.password }}"
-    #     datacenter: "{{ vcenter.datacenter }}"
-    #     validate_certs: no
-    #     folder: "{{ vcenter.folder }}"
-    #     name: "{{  nodename }}"
-    #     state: absent
+    - name: Delete openshift VM
+      vmware_guest:
+        hostname: "{{ vcenter.host }}"
+        username: "{{ vcenter.username }}"
+        password: "{{ vcenter.password }}"
+        datacenter: "{{ vcenter.datacenter }}"
+        validate_certs: no
+        folder: "{{ vcenter.folder }}"
+        name: "{{  nodename }}"
+        state: absent
 
-    - name: Reterives the cluster ID
-      uri:
-        url: https://{{ morpheus_server }}/api/clusters?name={{ openshift_cluster_name }}
-        method: Get
-        headers:
-          Content-Type: "application/json"
-          Authorization: "Bearer {{ bearer_token }}"
-        return_content: true
-        validate_certs: false
-        status_code: 200
-        timeout: 30
-      register: webpage  
-    - debug:
-        var: webpage.content
-    - set_fact:
-        # cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"
-        size: "{{ (webpage.content | from_json).meta.size }}"
-      # when: webpage.rc == 0
-    - debug:
-        var: size    
+    # - name: Reterives the cluster ID
+    #   uri:
+    #     url: https://{{ morpheus_server }}/api/clusters?name={{ openshift_cluster_name }}
+    #     method: Get
+    #     headers:
+    #       Content-Type: "application/json"
+    #       Authorization: "Bearer {{ bearer_token }}"
+    #     return_content: true
+    #     validate_certs: false
+    #     status_code: 200
+    #     timeout: 30
+    #   register: webpage  
+    # - debug:
+    #     var: webpage.content
+    # - set_fact:
+    #     # cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"
+    #     size: "{{ (webpage.content | from_json).meta.size }}"
+    #   # when: webpage.rc == 0
+    # - debug:
+    #     var: size    
 
-    - set_fact:
-        cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"       
-      when: size == "1"
+    # - set_fact:
+    #     cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"       
+    #   when: size == "1"
       
-    - name: Update the cluster
-      uri:
-        url: https://{{ morpheus_server }}/api/clusters/{{ cluster_id }}
-        method: PUT
-        headers:
-          Content-Type: "application/json"
-          Authorization: "Bearer {{ bearer_token }}"
-        return_content: yes
-        validate_certs: false
-        status_code: 200
-        timeout: 30
-      register: webpage
-      when: size == "1"
+    # - name: Update the cluster
+    #   uri:
+    #     url: https://{{ morpheus_server }}/api/clusters/{{ cluster_id }}
+    #     method: PUT
+    #     headers:
+    #       Content-Type: "application/json"
+    #       Authorization: "Bearer {{ bearer_token }}"
+    #     return_content: yes
+    #     validate_certs: false
+    #     status_code: 200
+    #     timeout: 30
+    #   register: webpage
+    #   when: size == "1"
   
