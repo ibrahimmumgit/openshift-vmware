@@ -106,7 +106,17 @@
 
     # - name: Approve all pending csrs
     #   command: "{{ openshift_working_directory_path }}/bin/oc get csr -o json --kubeconfig={{ kubeconfig_path }} | jq -r '.items[] | select(.status == {} ) | .metadata.name' | xargs oc adm certificate approve" # noqa 301
+    - name: Wait for system:node csrs to approve
+      shell: "{{ openshift_working_directory_path }}/bin/oc get csr -o json --kubeconfig={{ kubeconfig_path }} | jq -r '.items[] | select(.status == {}) | .metadata.name'" # noqa 301 306
+      register: result_csr
+      until: result_csr['stdout_lines']|count >= 1
+      retries: 60
+      delay: 60
+      ignore_errors: true
 
+    - name: Approve the csrs
+      command: "{{ openshift_working_directory_path }}/bin/oc adm certificate approve {{ item }} --kubeconfig={{ kubeconfig_path }}" # noqa 301
+      loop: "{{ result_csr['stdout_lines'] }}"
 
 
 
