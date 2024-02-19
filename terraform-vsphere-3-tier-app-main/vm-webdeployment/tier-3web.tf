@@ -9,7 +9,7 @@
 # Create web server - tier-1web
 # -------------------------------------------------------------
 
-module "tier-1web" {
+module "tier-3web" {
     source          = "../modules/vsphere-deploy-linux-vm/"
     # -------------------------------------------------------------
     # INFRASTRUCTURE - VMware vSphere vCenter settings 
