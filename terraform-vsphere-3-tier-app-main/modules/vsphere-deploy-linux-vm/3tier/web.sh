@@ -1,6 +1,6 @@
 #!/bin/bash
 # Install nginx and epel-release equivalent on Ubuntu
-web_server_name="192.168.9.24"
+web_server_name="192.168.9.23"
 app_server_name="192.168.9.22"
 sudo apt update
 sudo apt install -y nginx
