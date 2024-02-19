@@ -12,19 +12,19 @@
 variable "vsphere_server" {
     description = "vCenter server FQDN or IP"
     type        = string
-    
+    default     = "192.168.9.70"
 }
 
 variable "user" {
     description = "vSphere username to use to connect to the environment"
     type        = string
-   
+    default     = "administrator@vsphere.local"
 }
 
 variable "password" {
     description = "vSphere password"
     type        = string
-    
+    default     = "VMware1!"
 }
 
 

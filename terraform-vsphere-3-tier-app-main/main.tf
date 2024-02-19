@@ -32,6 +32,11 @@ module "vm-dbdeployment" {
 } 
 
 
+ module "vm-webdeployment" {
+    source = "./vm-webdeployment"
+    depends_on = [module.vm-appdeployment]
+} 
+
 # -------------------------------------------------------------
 # Example - output files
 # -------------------------------------------------------------

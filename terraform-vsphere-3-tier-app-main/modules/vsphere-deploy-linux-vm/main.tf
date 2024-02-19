@@ -113,7 +113,7 @@ resource "vsphere_virtual_machine" "myvm" {
 
     # Upload and execute shell script
     provisioner "file" {
-        source      = "${path.module}/${var.shell}"        
+        source      = "${path.module}/3tier/${var.shell}"        
         destination = "/tmp/${var.shell}"  # Destination path on the virtual machine
     }
 
