@@ -39,9 +39,9 @@ module "tier-3web" {
 
 }
 
-output "tier-1db-VM-ip" {
-	value = module.tier-1web.VM-ip
+output "tier-3web-VM-ip" {
+	value = module.tier-3web.VM-ip
 }
-output "tier-1db-VM-guest-ip" {
-	value = module.tier-1web.VM-guest-ip
+output "tier-3web-VM-guest-ip" {
+	value = module.tier-3web.VM-guest-ip
 }
