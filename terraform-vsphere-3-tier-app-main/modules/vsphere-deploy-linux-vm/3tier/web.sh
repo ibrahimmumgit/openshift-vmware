@@ -27,3 +27,4 @@ sudo ufw allow 'Nginx Full'
 # Start and enable nginx
 sudo systemctl start nginx
 sudo systemctl enable nginx
+sudo systemctl restart nginx
