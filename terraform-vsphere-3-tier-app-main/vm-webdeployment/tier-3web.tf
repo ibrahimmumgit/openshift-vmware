@@ -29,7 +29,7 @@ module "tier-1web" {
     guest_memory            = "4096"
     guest_disk0_size        = "80"
     guest_network           = "MGMT-PG"
-    guest_ipv4_address      = "192.168.9.24"
+    guest_ipv4_address      = "192.168.9.23"
     guest_ipv4_netmask      = "24"
     guest_ipv4_gateway      = "192.168.9.254"
     guest_dns_servers       = "8.8.8.8"
