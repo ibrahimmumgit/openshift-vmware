@@ -27,7 +27,4 @@ variable "password" {
     
 }
 
-variable "provider_vsphere_unverified_ssl" {
-    description = "If there is a self-signed cert"
-    default     = true
-}
+
