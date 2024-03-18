@@ -70,6 +70,10 @@
         name: "{{ nodename }}"
       register: result 
       
+    - name: IP Details
+      debug:
+        msg: "ip={{ ipaddr }}::{{ vcenter.gateway }}:{{ vcenter.netmask }}:{{ nodename }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}:ens192:off:{{ vcenter.dns }}"   
+        
     - name: worker node mac address
       debug:
         msg: "{{ result.instance.hw_eth0.macaddress }}"
