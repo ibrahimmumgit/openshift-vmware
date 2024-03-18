@@ -1,7 +1,7 @@
 #!/bin/bash
 # Install php and integrate with MariaDB
 dbip="192.168.9.21"
-/usr/bin/apt -y install mysql-server apache2 php php7.4-mysql php-common php-gd php-xml php-mbstring  php-xmlrpc unzip wget
+sudo apt -y install mysql-server apache2 php php-mysqlnd php-gd php-xml php-mbstring php-xmlrpc unzip wget
 
 # Download PHP files
 wget -O /var/www/html/config.php  https://raw.githubusercontent.com/ibrahimmumgit/3Tier/master/app/config.php
