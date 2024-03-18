@@ -47,7 +47,7 @@
         #networks:
         #- name: "{{ vcenter.network }}"
         wait_for_ip_address: no
-        customvalues: 
+        advanced_settings: 
           - key: "sched.cpu.latencySensitivity"
             value: "normal"
           - key: "guestinfo.afterburn.initrd.network-kargs"
