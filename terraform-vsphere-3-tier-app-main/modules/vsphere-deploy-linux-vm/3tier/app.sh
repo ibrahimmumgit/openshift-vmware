@@ -1,6 +1,11 @@
 #!/bin/bash
 # Install php and integrate with MariaDB
 dbip="192.168.9.21"
+sudo apt clean
+sudo sed -i 's/http:\/\/us.archive.ubuntu.com/http:\/\/archive.ubuntu.com/' /etc/apt/sources.list
+sudo apt update
+sudo apt upgrade -y
+sleep 180
 sudo apt -y install mysql-server apache2 php php-mysqlnd php-gd php-xml php-mbstring php-xmlrpc unzip wget
 
 # Download PHP files
