@@ -59,7 +59,20 @@
           - key: "guestinfo.ignition.config.data"
             value: "{{ ignition_value }}"
           #   value: "ip={{ IPaddress }}::{{ vcenter.gateway  }}:{{ vcenter.netmask }}:{{ item.name }}:none:{{ vcenter.dns  }}"
-
+          
+    - name: Fetch the node details
+      vmware_guest_info:
+        hostname: "{{ vcenter.host }}"
+        username: "{{ vcenter.username }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: no
+        datacenter: "{{ vcenter.datacenter }}"
+        name: "{{ nodename }}"
+      register: result 
+      
+    - name: worker node mac address
+      debug:
+        msg: "{{ result.instance.hw_eth0.macaddress }}"
       
     - name: Configure network for worker nodes
       vmware_guest_network:
@@ -71,7 +84,7 @@
         name: "{{ nodename }}"
         networks:
           - name: "{{ vcenter.network }}"
-            #manual_mac: "{{ item.macaddress }}"
+            manual_mac: "{{ result.instance.hw_eth0.macaddress }}"
             label: "Network adapter 1"
             state: present
             start_connected: true
