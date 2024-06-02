@@ -12,9 +12,9 @@
     - set_fact:
         BEARER: "{{ lookup('cypher','secret=secret/userpass') }}"
         
-   - name: Create Tenant Role
+    - name: Create Tenant Role
       uri:
-        url: "https://hpe-cmp.helionit.io/api/roles"
+        url: "https://{{ URL }}/api/roles"
         method: POST
         headers:
           Authorization: "Bearer {{ BEARER }}"
@@ -28,24 +28,25 @@
             baseRoleId: 1490
         return_content: yes               
         validate_certs: no
-        timeout: 300
-      register: response
+      register: response  
+      ignore_errors: yes     
+
 
     - name: Get Tenant ROLEID 
       uri:
-        url: "https://{{ URL }}/api/accounts?phrase={{ SUBTENANTNAME }}_tenant_role"
+        url: "https://{{ URL }}/api/roles?phrase={{ SUBTENANTNAME }}_tenant_role"
         method: GET
         headers:
           accept: "application/json"
           Authorization: "Bearer {{ BEARER }}"
         return_content: yes
         validate_certs: no
-      register: response
       ignore_errors: yes
-
+      register: response
+  
     - name: Extract Account IDs
       set_fact:
-        TENANTROLEID: "{{ response.json.roles | map(attribute='id') }}"
+        TENANTROLEID: "{{ response.json.roles | map(attribute='id') | first  }}"
         
 
     - name: Debug role ID
@@ -71,7 +72,6 @@
               id: "{{ TENANTROLEID }}"
         return_content: yes
         validate_certs: no
-        timeout: 300
       ignore_errors: yes
       register: response   
 
@@ -88,7 +88,7 @@
 
     - name: Extract Account IDs
       set_fact:
-        TENANTID: "{{ response.json.accounts | map(attribute='id') }}"
+        TENANTID: "{{ response.json.accounts | map(attribute='id') | first }}"
         
     - name: Debug Response
       debug:
@@ -113,13 +113,12 @@
             multitenantLocked: false
         return_content: yes
         validate_certs: no
-        timeout: 300
       ignore_errors: yes
       register: response
 
     - name: Get USERROLEID 
       uri:
-        url: "https://{{ URL }}/api/accounts?phrase={{ SUBTENANTNAME }}role"
+        url: "https://{{ URL }}/api/roles?phrase={{ SUBTENANTNAME }}role"
         method: GET
         headers:
           accept: "application/json"
@@ -130,7 +129,7 @@
 
     - name: Extract Account IDs
       set_fact:
-        USERROLEID: "{{ response.json.roles | map(attribute='id') }}"
+        USERROLEID: "{{ response.json.roles | map(attribute='id') | first }}"
         
     - name: Debug Response
       debug:
@@ -139,7 +138,7 @@
         
     - name: Create User
       uri:
-        url: "https://{{ URL }}/api/accounts/{{ TENANTID }}/users"
+        url: "https://{{ URL }}/api/accounts/{{ TENANTID }}/users"  
         method: POST
         headers:
           Authorization: "Bearer {{ BEARER }}"
@@ -155,7 +154,7 @@
             passwordConfirmation: "{{ SUBTENANTUSERPASSWORD }}"
             receiveNotifications: "on"
             roles:
-              - id: "{{ USERROLEID }}"
+              - id: "{{ USERROLEID | int  }}"
         return_content: yes
         validate_certs: no
       register: response
