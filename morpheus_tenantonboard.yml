@@ -1,5 +1,5 @@
 ---
-- name: This is to add user on instances
+- name: Morpheus Teanant onboarding
   hosts: all
   gather_facts: yes
   vars:
@@ -12,7 +12,7 @@
     - set_fact:
         BEARER: "{{ lookup('cypher','secret=secret/userpass') }}"
         
-    - name: Create Tenant Role
+   - name: Create Tenant Role
       uri:
         url: "https://hpe-cmp.helionit.io/api/roles"
         method: POST
@@ -31,9 +31,22 @@
         timeout: 300
       register: response
 
-    - name: Extract role ID
+    - name: Get Tenant ROLEID 
+      uri:
+        url: "https://{{ URL }}/api/accounts?phrase={{ SUBTENANTNAME }}_tenant_role"
+        method: GET
+        headers:
+          accept: "application/json"
+          Authorization: "Bearer {{ BEARER }}"
+        return_content: yes
+        validate_certs: no
+      register: response
+      ignore_errors: yes
+
+    - name: Extract Account IDs
       set_fact:
-        TENANTROLEID: "{{ response.json.role.id }}"
+        TENANTROLEID: "{{ response.json.roles | map(attribute='id') }}"
+        
 
     - name: Debug role ID
       debug:
@@ -101,15 +114,27 @@
         return_content: yes
         validate_certs: no
         timeout: 300
+      ignore_errors: yes
       register: response
 
-    - name: Extract role ID
-      set_fact:
-        USERROLEID: "{{ response.json.role.id }}"
+    - name: Get USERROLEID 
+      uri:
+        url: "https://{{ URL }}/api/accounts?phrase={{ SUBTENANTNAME }}role"
+        method: GET
+        headers:
+          accept: "application/json"
+          Authorization: "Bearer {{ BEARER }}"
+        return_content: yes
+        validate_certs: no
+      register: response
 
-    - name: Debug role ID
+    - name: Extract Account IDs
+      set_fact:
+        USERROLEID: "{{ response.json.roles | map(attribute='id') }}"
+        
+    - name: Debug Response
       debug:
-        msg: "Role ID: {{ USERROLEID }}"       
+        var: USERROLEID      
         
         
     - name: Create User
