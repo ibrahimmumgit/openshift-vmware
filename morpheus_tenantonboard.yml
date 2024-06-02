@@ -1,0 +1,140 @@
+---
+- name: This is to add user on instances
+  hosts: localhost
+  gather_facts: yes
+  vars:
+    SUBTENANTNAME: "{{ morpheus['customOptions']['subtenantnameInput'] }}"
+    subtenantemail: "{{ morpheus['customOptions']['subtenantuseremailInput'] }}"
+    subtenantpassword: "{{ morpheus['customOptions']['subtenantuserpwdInput'] }}"   
+    URL: "hpe-cmp.helionit.io"
+   
+  tasks:
+    - set_fact:
+        BEARER: "{{ lookup('cypher','secret=secret/userpass') }}"
+        
+    - name: Create Tenant Role
+      uri:
+        url: "https://hpe-cmp.helionit.io/api/roles"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ BEARER }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          role:
+            authority: "{{ SUBTENANTNAME }}_tenant_role"
+            description: "Tenant role sets the maximum permissions for tenant {{ SUBTENANTNAME }}"
+            roleType: "account"
+            baseRoleId: 1490
+        return_content: yes               
+        validate_certs: no
+        timeout: 300
+      register: response
+
+    - name: Extract role ID
+      set_fact:
+        TENANTROLEID: "{{ response.json.role.id }}"
+
+    - name: Debug role ID
+      debug:
+        msg: "Role ID: {{ TENANTROLEID }}"
+        
+        
+    - name: Create Subtenant Account
+      uri:
+        url: "https://hpe-cmp.helionit.io/api/accounts"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ BEARER }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          account:
+            name: "{{ SUBTENANTNAME }}"
+            description: "Subtenant for {{ SUBTENANTNAME }}"
+            currency: "NZD"
+            subdomain: "{{ SUBTENANTNAME }}subdomain"
+            role:
+              id: "{{ TENANTROLEID }}"
+        return_content: yes
+        validate_certs: no
+        timeout: 300
+      ignore_errors: yes
+      register: response   
+
+    - name: Get Account IDs
+      uri:
+        url: "https://{{ URL }}/api/accounts?max=25&offset=0&sort=name&direction=asc&name={{ SUBTENANTNAME }}"
+        method: GET
+        headers:
+          accept: "application/json"
+          Authorization: "Bearer {{ BEARER }}"
+        return_content: yes
+        validate_certs: no
+      register: response
+
+    - name: Extract Account IDs
+      set_fact:
+        TENANTID: "{{ response.json.accounts | map(attribute='id') }}"
+        
+    - name: Debug Response
+      debug:
+        var: TENANTID
+
+
+    - name: create-multi-tenant-user-role
+      uri:
+        url: "https://{{ URL }}/api/roles"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ BEARER }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          role:
+            authority: "{{ SUBTENANTNAME }}role"
+            description: "Multi-tenant user role. Base role for subtenants"
+            roleType: "user"
+            baseRoleId: 868
+            multitenant: true
+            multitenantLocked: false
+        return_content: yes
+        validate_certs: no
+        timeout: 300
+      register: response
+
+    - name: Extract role ID
+      set_fact:
+        USERROLEID: "{{ response.json.role.id }}"
+
+    - name: Debug role ID
+      debug:
+        msg: "Role ID: {{ USERROLEID }}"       
+        
+        
+    - name: Create User
+      uri:
+        url: "https://{{ URL }}/api/accounts/{{ TENANTID }}/users"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ BEARER }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          user:
+            firstName: "{{ SUBTENANTNAME }}"
+            lastName: "Admin"
+            username: "{{ SUBTENANTNAME }}admin"
+            email: "{{ SUBTENANTUSEREMAIL }}"
+            password: "{{ SUBTENANTUSERPASSWORD }}"
+            passwordConfirmation: "{{ SUBTENANTUSERPASSWORD }}"
+            receiveNotifications: "on"
+            roles:
+              - id: "{{ USERROLEID }}"
+        return_content: yes
+        validate_certs: no
+      register: response
+      
+    - name: Response
+      debug:
+        msg: "Response: {{ response }}"
