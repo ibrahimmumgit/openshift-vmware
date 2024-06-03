@@ -18,7 +18,7 @@
         body: |
           {
             "group": {
-              "name": "private_cloud_api"
+              "name": "private_cloud_api1"
             }
           }
         body_format: json
