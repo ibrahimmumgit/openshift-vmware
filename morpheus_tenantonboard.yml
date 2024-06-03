@@ -1,6 +1,6 @@
 ---
 - name: Morpheus Teanant onboarding
-  hosts: morpheus_local
+  hosts: all
   gather_facts: yes
   vars:
     SUBTENANTNAME: "{{ morpheus['customOptions']['subtenantnameInput'] }}"
