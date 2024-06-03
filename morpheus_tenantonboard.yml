@@ -5,7 +5,8 @@
   vars:
     SUBTENANTNAME: "{{ morpheus['customOptions']['SubtenantName'] }}"
     SUBTENANTUSEREMAIL: "{{ morpheus['customOptions']['subtenantuseremailInput'] }}"
-    SUBTENANTUSERPASSWORD: "{{ morpheus['customOptions']['SubtenantUserPassword'] }}"   
+    SUBTENANTUSERPASSWORD: "{{ morpheus['customOptions']['SubtenantUserPassword'] }}" 
+    morpheus_server: "{{ morpheus['morpheus']['applianceUrl'] }}"
     #URL: "hpe-cmp-training.helionit.io"
     URL: "172.16.10.178"
    
@@ -15,7 +16,7 @@
         
     - name: Create Tenant Role
       uri:
-        url: "https://{{ URL }}/api/roles"
+        url: "{{ morpheus_server }}api/roles"
         method: POST
         headers:
           Authorization: "Bearer {{ BEARER }}"
@@ -35,7 +36,7 @@
 
     - name: Get Tenant ROLEID 
       uri:
-        url: "https://{{ URL }}/api/roles?phrase={{ SUBTENANTNAME }}_tenant_role"
+        url: "{{ morpheus_server }}api/roles?phrase={{ SUBTENANTNAME }}_tenant_role"
         method: GET
         headers:
           accept: "application/json"
@@ -57,7 +58,7 @@
         
     - name: Create Subtenant Account
       uri:
-        url: "https://{{ URL }}/api/accounts"
+        url: "{{ morpheus_server }}api/accounts"
         method: POST
         headers:
           Authorization: "Bearer {{ BEARER }}"
@@ -78,7 +79,7 @@
 
     - name: Get Account IDs
       uri:
-        url: "https://{{ URL }}/api/accounts?max=25&offset=0&sort=name&direction=asc&name={{ SUBTENANTNAME }}"
+        url: "{{ morpheus_server }}api/accounts?max=25&offset=0&sort=name&direction=asc&name={{ SUBTENANTNAME }}"
         method: GET
         headers:
           accept: "application/json"
@@ -98,7 +99,7 @@
 
     - name: create-multi-tenant-user-role
       uri:
-        url: "https://{{ URL }}/api/roles"
+        url: "{{ morpheus_server }}api/roles"
         method: POST
         headers:
           Authorization: "Bearer {{ BEARER }}"
@@ -119,7 +120,7 @@
 
     - name: Get USERROLEID 
       uri:
-        url: "https://{{ URL }}/api/roles?phrase={{ SUBTENANTNAME }}role"
+        url: "{{ morpheus_server }}api/roles?phrase={{ SUBTENANTNAME }}role"
         method: GET
         headers:
           accept: "application/json"
