@@ -7,37 +7,12 @@
     BEARER: "{{ morpheus['morpheus']['apiAccessToken'] }}"
     tenantId: "{{  morpheus['accountId'] }}"
     zoneId: "5"
+    GroupID: "809"
   tasks:
-    - name: Create a group
-      uri:
-        url: "{{ morpheus_server }}api/groups"
-        method: POST
-        headers:
-          Authorization: "Bearer {{ BEARER }}"
-          Content-Type: "application/json"
-        body: |
-          {
-            "group": {
-              "name": "private_cloud_api"
-            }
-          }
-        body_format: json
-        return_content: yes
-        validate_certs: no
-      register: result
-      
     - name: Print result
       debug:
-        var: result  
+        var: BEARER
         
-    - name: Extract Group IDs
-      set_fact:
-        GroupID: "{{ result.json.group.id }}"
-
-    - name: Print result
-      debug:
-        var: GroupID
-
     - name: PUT to update zones
       uri:
         url: "{{ morpheus_server }}api/accounts/{{ tenantId }}/groups/{{ GroupID }}/update-zones"
