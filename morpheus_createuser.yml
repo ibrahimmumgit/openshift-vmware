@@ -6,15 +6,14 @@
     SUBTENANTNAME: "{{ morpheus['customOptions']['SubtenantName'] }}"
     SUBTENANTUSEREMAIL: "{{ morpheus['customOptions']['subtenantuseremailInput'] }}"
     SUBTENANTUSERPASSWORD: "{{ morpheus['customOptions']['SubtenantUserPassword'] }}"   
-    #URL: "hpe-cmp-training.helionit.io"  
-    URL: "172.16.10.178"
+    morpheus_server: "{{ morpheus['morpheus']['applianceUrl'] }}"
   tasks:
     - set_fact:
         BEARER: "{{ lookup('cypher','secret=secret/morpheusapi') }}"
         
     - name: Get Account IDs
       uri:
-        url: "https://{{ URL }}/api/accounts?max=25&offset=0&sort=name&direction=asc&name={{ SUBTENANTNAME }}"
+        url: "{{ morpheus_server }}api/accounts?max=25&offset=0&sort=name&direction=asc&name={{ SUBTENANTNAME }}"
         method: GET
         headers:
           accept: "application/json"
@@ -33,7 +32,7 @@
       
     - name: Get USERROLEID 
       uri:
-        url: "https://{{ URL }}/api/roles?phrase={{ SUBTENANTNAME }}role"
+        url: "{{ morpheus_server }}api/roles?phrase={{ SUBTENANTNAME }}role"
         method: GET
         headers:
           accept: "application/json"
@@ -52,7 +51,7 @@
         
     - name: Create User
       uri:
-        url: "https://{{ URL }}/api/accounts/{{ TENANTID }}/users"  
+        url: "{{ morpheus_server }}api/accounts/{{ TENANTID }}/users"  
         method: POST
         headers:
           Authorization: "Bearer {{ BEARER }}"
