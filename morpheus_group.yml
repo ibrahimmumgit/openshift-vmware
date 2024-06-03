@@ -5,7 +5,7 @@
   vars: 
     morpheus_server: "{{ morpheus['morpheus']['applianceUrl'] }}"
     bearer_token: "{{ morpheus['morpheus']['apiAccessToken'] }}"
-    tenant: "{{  morpheus['tenant'] }}"
+    tenant: "{{  morpheus }}"
     tenantId: "{{  morpheus['tenantId'] }}"
     URL: "172.16.10.178"
   tasks:
@@ -19,7 +19,7 @@
 
     - name: Print tenantId
       debug:
-        msg: "tenantId: {{ tenantId }}"
+        msg: "tenantId: {{ tenant }}"
 
     - name: Print tenant
       debug:
