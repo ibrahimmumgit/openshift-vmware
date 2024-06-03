@@ -11,7 +11,8 @@
     network_id: "3"
   tasks:
     - set_fact:
-        BEARER_MASTER: "{{ lookup('cypher','secret=secret/morpheusapi') }}"
+        #BEARER_MASTER: "{{ lookup('cypher','secret=secret/morpheusapi') }}"
+        BEARER_MASTER: "b32fffe1-c2ce-466c-a515-4c785140ea33"
         
     - name: Create a group
       uri:
