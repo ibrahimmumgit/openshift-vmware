@@ -56,7 +56,7 @@
         
     - name: Create Subtenant Account
       uri:
-        url: "https://hpe-cmp.helionit.io/api/accounts"
+        url: "https://{{ URL }}/api/accounts"
         method: POST
         headers:
           Authorization: "Bearer {{ BEARER }}"
