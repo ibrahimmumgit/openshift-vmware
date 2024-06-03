@@ -136,29 +136,4 @@
         var: USERROLEID      
         
         
-    - name: Create User
-      uri:
-        url: "https://{{ URL }}/api/accounts/{{ TENANTID }}/users"  
-        method: POST
-        headers:
-          Authorization: "Bearer {{ BEARER }}"
-          Content-Type: "application/json"
-        body_format: json
-        body:
-          user:
-            firstName: "{{ SUBTENANTNAME }}"
-            lastName: "Admin"
-            username: "{{ SUBTENANTNAME }}admin"
-            email: "{{ SUBTENANTUSEREMAIL }}"
-            password: "{{ SUBTENANTUSERPASSWORD }}"
-            passwordConfirmation: "{{ SUBTENANTUSERPASSWORD }}"
-            receiveNotifications: "on"
-            roles:
-              - id: "{{ USERROLEID | int  }}"
-        return_content: yes
-        validate_certs: no
-      register: response
-      
-    - name: Response
-      debug:
-        msg: "Response: {{ response }}"
+
