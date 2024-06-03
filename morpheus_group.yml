@@ -1,1 +1,26 @@
+---
+- name: Morpheus create user 
+  hosts: localhost
+  gather_facts: yes
+  vars: 
+    morpheus_server: "{{ morpheus['morpheus']['applianceUrl'] }}"
+    bearer_token: "{{ morpheus['morpheus']['apiAccessToken'] }}"
+    tenant: "{{  morpheus['tenant'] }}"
+    tenantId: "{{  morpheus['tenantId'] }}"
+    URL: "172.16.10.178"
+  tasks:
+    - name: Print morpheus_server
+      debug:
+        msg: "morpheus_server: {{ morpheus_server }}"
+        
+    - name: Print bearer_token
+      debug:
+        msg: "bearer_token: {{ bearer_token }}"
 
+    - name: Print tenantId
+      debug:
+        msg: "tenantId: {{ tenantId }}"
+
+    - name: Print tenant
+      debug:
+        msg: "tenant: {{ tenant }}"
