@@ -49,7 +49,25 @@
     - name: Extract Account IDs
       set_fact:
         TENANTROLEID: "{{ response.json.roles | map(attribute='id') | first  }}"
-        
+     - name: PUT to update cloud access
+      uri:
+        url: "{{ morpheus_server }}api/roles/{{ TENANTROLEID }}/update-cloud"
+        method: PUT 
+        headers:
+          accept: "application/json"
+          authorization: "Bearer {{ BEARER }}"
+          content-type: "application/json"
+        body: |
+          {
+            "access": "none",
+            "cloudId": 6
+          }
+        body_format: json
+        return_content: yes
+        timeout: 60
+        validate_certs: no
+      register: result   
+      
 
     - name: Debug role ID
       debug:
