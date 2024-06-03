@@ -27,7 +27,7 @@
             authority: "{{ SUBTENANTNAME }}_tenant_role"
             description: "Tenant role sets the maximum permissions for tenant {{ SUBTENANTNAME }}"
             roleType: "account"
-            baseRoleId: 2
+            baseRoleId: 54
         return_content: yes               
         validate_certs: no
       register: response  
