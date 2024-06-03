@@ -107,7 +107,7 @@
         body: |
           {
             "network": {
-              "visibility": "private",
+
               "tenants": [
                 {
                   "id": {{ zoneId }}
