@@ -49,7 +49,7 @@
     - name: Extract Account IDs
       set_fact:
         TENANTROLEID: "{{ response.json.roles | map(attribute='id') | first  }}"
-     - name: PUT to update cloud access
+    - name: PUT to update cloud access
       uri:
         url: "{{ morpheus_server }}api/roles/{{ TENANTROLEID }}/update-cloud"
         method: PUT 
