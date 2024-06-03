@@ -67,7 +67,7 @@
       
     - name: Update Resource Pool 
       uri:
-        url: "{{ morpheus_server }}/api/zones/{{ zoneId }}/resource-pools/{{ datastore_id }}"
+        url: "{{ morpheus_server }}/api/zones/{{ zoneId }}/resource-pools/{{ resource_pools_id }}"
         method: PUT
         headers:
           accept: "application/json"
