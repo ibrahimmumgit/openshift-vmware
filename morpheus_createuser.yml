@@ -9,7 +9,7 @@
     URL: "hpe-cmp.helionit.io"    
   tasks:
     - set_fact:
-        BEARER: "{{ lookup('cypher','secret=secret/userpass') }}"
+        BEARER: "{{ lookup('cypher','secret=secret/morpheusapi') }}"
         
     - name: Get Account IDs
       uri:
