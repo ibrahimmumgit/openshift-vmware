@@ -6,7 +6,8 @@
     SUBTENANTNAME: "{{ morpheus['customOptions']['SubtenantName'] }}"
     SUBTENANTUSEREMAIL: "{{ morpheus['customOptions']['subtenantuseremailInput'] }}"
     SUBTENANTUSERPASSWORD: "{{ morpheus['customOptions']['SubtenantUserPassword'] }}"   
-    URL: "hpe-cmp-training.helionit.io"    
+    #URL: "hpe-cmp-training.helionit.io"  
+    URL: "172.16.10.178"
   tasks:
     - set_fact:
         BEARER: "{{ lookup('cypher','secret=secret/morpheusapi') }}"
