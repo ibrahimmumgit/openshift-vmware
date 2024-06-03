@@ -3,7 +3,7 @@
   hosts: localhost
   gather_facts: yes
   vars: 
-    SUBTENANTNAME: "{{ morpheus['customOptions']['subtenantnameInput'] }}"
+    SUBTENANTNAME: "{{ morpheus['customOptions']['SubtenantName'] }}"
     SUBTENANTUSEREMAIL: "{{ morpheus['customOptions']['subtenantuseremailInput'] }}"
     SUBTENANTUSERPASSWORD: "{{ morpheus['customOptions']['subtenantuserpwdInput'] }}"   
     URL: "hpe-cmp-training.helionit.io"    
