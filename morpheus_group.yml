@@ -10,6 +10,9 @@
     datastore_id: "2"
     network_id: "3"
   tasks:
+    - set_fact:
+        BEARER_MASTER: "{{ lookup('cypher','secret=secret/morpheusapi') }}"
+        
     - name: Create a group
       uri:
         url: "{{ morpheus_server }}api/groups"
@@ -66,7 +69,7 @@
         method: PUT
         headers:
           accept: "application/json"
-          authorization: "Bearer {{ BEARER }}"
+          authorization: "Bearer {{ BEARER_MASTER }}"
           content-type: "application/json"
         body: |
           {
@@ -98,7 +101,7 @@
         method: PUT
         headers:
           accept: "application/json"
-          authorization: "{{ BEARER }}"
+          authorization: "{{ BEARER_MASTER }}"
           content-type: "application/json"
         body: |
           {
