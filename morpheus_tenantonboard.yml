@@ -156,7 +156,7 @@
       debug:
         var: USERROLEID     
         
-   - name: PUT to update Group access
+    - name: PUT to update Group access
       uri:
         url: "{{ morpheus_server }}api/roles/{{ USERROLEID }}/update-group"
         method: PUT 
