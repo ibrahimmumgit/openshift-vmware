@@ -18,14 +18,18 @@
         body: |
           {
             "group": {
-              "name": "private_cloud_api1"
+              "name": "private_cloud_api"
             }
           }
         body_format: json
         return_content: yes
         validate_certs: no
       register: result
-    
+      
+    - name: Print result
+      debug:
+        var: result  
+        
     - name: Extract Group IDs
       set_fact:
         GroupID: "{{ result.json.group | map(attribute='id') | first }}"
