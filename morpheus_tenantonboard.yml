@@ -10,7 +10,7 @@
    
   tasks:
     - set_fact:
-        BEARER: "{{ lookup('cypher','secret=secret/userpass') }}"
+        BEARER: "{{ lookup('cypher','secret=secret/morpheusapi') }}"
         
     - name: Create Tenant Role
       uri:
