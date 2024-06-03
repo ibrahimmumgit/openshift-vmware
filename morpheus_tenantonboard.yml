@@ -5,7 +5,7 @@
   vars:
     SUBTENANTNAME: "{{ morpheus['customOptions']['SubtenantName'] }}"
     SUBTENANTUSEREMAIL: "{{ morpheus['customOptions']['subtenantuseremailInput'] }}"
-    SUBTENANTUSERPASSWORD: "{{ morpheus['customOptions']['subtenantuserpwdInput'] }}"   
+    SUBTENANTUSERPASSWORD: "{{ morpheus['customOptions']['SubtenantUserPassword'] }}"   
     URL: "hpe-cmp-training.helionit.io"
    
   tasks:
