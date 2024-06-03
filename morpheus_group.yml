@@ -25,7 +25,7 @@
         body: |
           {
             "group": {
-              "name": "Private_clouds"
+              "name": "Private_Clouds"
             }
           }
         body_format: json
