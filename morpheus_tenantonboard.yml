@@ -25,7 +25,7 @@
             authority: "{{ SUBTENANTNAME }}_tenant_role"
             description: "Tenant role sets the maximum permissions for tenant {{ SUBTENANTNAME }}"
             roleType: "account"
-            baseRoleId: 1490
+            baseRoleId: 2
         return_content: yes               
         validate_certs: no
       register: response  
@@ -108,7 +108,7 @@
             authority: "{{ SUBTENANTNAME }}role"
             description: "Multi-tenant user role. Base role for subtenants"
             roleType: "user"
-            baseRoleId: 868
+            baseRoleId: 3
             multitenant: true
             multitenantLocked: false
         return_content: yes
