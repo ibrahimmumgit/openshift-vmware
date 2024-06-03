@@ -32,7 +32,7 @@
         
     - name: Extract Group IDs
       set_fact:
-        GroupID: "{{ result.json.group | map(attribute='id') | first }}"
+        GroupID: "{{ result.json.group.id }}"
 
     - name: Print result
       debug:
