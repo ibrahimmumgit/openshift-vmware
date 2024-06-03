@@ -23,7 +23,7 @@
         body: |
           {
             "group": {
-              "id": {{ GROUP_ID }},
+              "id": {{ GroupID }},
               "zones": [
                 {
                   "id": {{ zoneId }}
