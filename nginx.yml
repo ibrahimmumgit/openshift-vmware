@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Define the namespace
+namespace="nginx-example"
+
+# Create the namespace
+kubectl create namespace $namespace
+
+# Create NGINX deployment
+cat <<EOF | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: $namespace
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+EOF
+
+# Expose NGINX deployment as a service
+kubectl expose deployment nginx-deployment --type=LoadBalancer --port=80 --target-port=80 -n $namespace
+
+# Wait for the external IP to be assigned
+external_ip=""
+while [ -z $external_ip ]; do
+  echo "Waiting for external IP..."
+  external_ip=$(kubectl get svc -n $namespace | grep nginx-deployment | awk '{print $4}')
+  [ -z "$external_ip" ] && sleep 10
+done
+
+echo "NGINX is accessible at: http://$external_ip"
