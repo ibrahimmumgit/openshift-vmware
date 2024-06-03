@@ -49,6 +49,24 @@
       debug:
         var: USERROLEID    
         
+    - name: PUT to update cloud access
+      uri:
+        url: "{{ morpheus_server }}api/roles/{{ USERROLEID }}/update-cloud"
+        method: PUT 
+        headers:
+          accept: "application/json"
+          authorization: "Bearer {{ BEARER }}"
+          content-type: "application/json"
+        body: |
+          {
+            "access": "none",
+            "cloudId": 6
+          }
+        body_format: json
+        return_content: yes
+        timeout: 60
+      register: result    
+      
     - name: Create User
       uri:
         url: "{{ morpheus_server }}api/accounts/{{ TENANTID }}/users"  
