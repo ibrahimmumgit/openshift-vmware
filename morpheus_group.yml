@@ -1,5 +1,5 @@
 ---
-- name: Morpheus create user 
+- name: Morpheus Enable Cloud
   hosts: localhost
   gather_facts: yes
   vars: 
@@ -7,6 +7,8 @@
     BEARER: "{{ morpheus['morpheus']['apiAccessToken'] }}"
     tenantId: "{{  morpheus['accountId'] }}"
     zoneId: "1"
+    datastore_id: "2"
+    network_id: "3"
   tasks:
     - name: Create a group
       uri:
@@ -58,6 +60,61 @@
         timeout: 60
       register: result
 
-    - name: Print result
-      debug:
-        var: result       
+    - name: Update data store
+      uri:
+        url: "{{ morpheus_server }}/api/zones/{{ zoneId }}/data-stores/{{ datastore_id }}"
+        method: PUT
+        headers:
+          accept: "application/json"
+          authorization: "Bearer {{ BEARER }}"
+          content-type: "application/json"
+        body: |
+          {
+            "datastore": {
+              "visibility": "public",
+              "resourcePermissions": {
+                "all": true,
+                "allPlans": true
+              },
+              "active": true,
+              "tenantPermissions": [
+                {
+                  "accounts": [
+                    {{ zoneId }}  
+                  ]
+                }
+              ]
+            }
+          }
+        body_format: json
+        return_content: yes
+        timeout: 60
+        validate_certs: no
+      register: result
+
+    - name: Update network
+      uri:
+        url: "{{ morpheus_server }}api/networks/{{ network_id }}"
+        method: PUT
+        headers:
+          accept: "application/json"
+          authorization: "{{ BEARER }}"
+          content-type: "application/json"
+        body: |
+          {
+            "network": {
+              "visibility": "private",
+              "tenants": [
+                {
+                  "id": {{ zoneId }}
+                }
+              ]
+            }
+          }
+        body_format: json
+        return_content: yes
+        timeout: 60
+        validate_certs: no
+      register: result
+
+    
