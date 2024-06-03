@@ -6,7 +6,7 @@
     SUBTENANTNAME: "{{ morpheus['customOptions']['subtenantnameInput'] }}"
     SUBTENANTUSEREMAIL: "{{ morpheus['customOptions']['subtenantuseremailInput'] }}"
     SUBTENANTUSERPASSWORD: "{{ morpheus['customOptions']['subtenantuserpwdInput'] }}"   
-    URL: "hpe-cmp.helionit.io"
+    URL: "hpe-cmp-training.helionit.io"
    
   tasks:
     - set_fact:
