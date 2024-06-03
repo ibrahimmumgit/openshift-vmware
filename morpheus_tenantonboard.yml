@@ -16,7 +16,7 @@
         
     - name: Create Tenant Role
       uri:
-        url: "{{ morpheus_server }}api/roles"
+        url: "{{ morpheus_server }}api/roles?includeDefaultAccess=true"
         method: POST
         headers:
           Authorization: "Bearer {{ BEARER }}"
