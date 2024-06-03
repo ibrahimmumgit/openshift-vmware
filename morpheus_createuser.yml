@@ -65,6 +65,7 @@
         body_format: json
         return_content: yes
         timeout: 60
+        validate_certs: no
       register: result    
       
     - name: Create User
