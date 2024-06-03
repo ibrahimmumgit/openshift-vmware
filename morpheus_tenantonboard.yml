@@ -154,7 +154,25 @@
         
     - name: Debug Response
       debug:
-        var: USERROLEID      
+        var: USERROLEID     
         
+   - name: PUT to update Group access
+      uri:
+        url: "{{ morpheus_server }}api/roles/{{ USERROLEID }}/update-group"
+        method: PUT 
+        headers:
+          accept: "application/json"
+          authorization: "Bearer {{ BEARER }}"
+          content-type: "application/json"
+        body: |
+          {
+            "access": "none",
+            "groupId": 2
+          }
+        body_format: json
+        return_content: yes
+        timeout: 60
+        validate_certs: no
+      register: result         
         
 
