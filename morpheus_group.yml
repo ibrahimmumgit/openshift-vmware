@@ -15,14 +15,15 @@
         
     - name: PUT to update zones
       uri:
-        url: "{{ morpheus_server }}api/accounts/{{ tenantId }}/groups/{{ GroupID }}/update-zones"
+        url: "{{ morpheus_server }}api/groups/{{ GroupID }}/update-zones"
         method: PUT
         headers:
-          accept: "application/json"
-          content-type: "application/json"
+          Authorization: "Bearer {{ BEARER }}"
+          Content-Type: "application/json"
         body: |
           {
             "group": {
+              "id": {{ GROUP_ID }},
               "zones": [
                 {
                   "id": {{ zoneId }}
@@ -33,8 +34,9 @@
         body_format: json
         return_content: yes
         validate_certs: no
+        timeout: 60
       register: result
 
     - name: Print result
       debug:
-        var: result
+        var: result       
