@@ -23,6 +23,7 @@
           }
         body_format: json
         return_content: yes
+        validate_certs: no
       register: result
     
     - name: Extract Group IDs
@@ -52,6 +53,7 @@
           }
         body_format: json
         return_content: yes
+        validate_certs: no
       register: result
 
     - name: Print result
