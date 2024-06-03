@@ -1,6 +1,6 @@
 ---
 - name: This is to add user 
-  hosts: all
+  hosts: localhost
   gather_facts: yes
   vars: 
     SUBTENANTNAME: "{{ morpheus['customOptions']['subtenantnameInput'] }}"
