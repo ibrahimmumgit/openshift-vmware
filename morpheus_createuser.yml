@@ -1,18 +1,15 @@
 ---
-- name: This is to add user on instances
-  hosts: localhost
+- name: This is to add user 
+  hosts: all
   gather_facts: yes
-  vars:
- 
-    URL: "hpe-cmp.helionit.io"
-    SUBTENANTNAME: "tenantfromansible09"    
-    SUBTENANTUSEREMAIL: "tenantfromansible021@test.com"
-    SUBTENANTUSERPASSWORD: "P@ssw0rd"  
-
-    
+  vars: 
+    SUBTENANTNAME: "{{ morpheus['customOptions']['subtenantnameInput'] }}"
+    subtenantemail: "{{ morpheus['customOptions']['subtenantuseremailInput'] }}"
+    subtenantpassword: "{{ morpheus['customOptions']['subtenantuserpwdInput'] }}"   
+    URL: "hpe-cmp.helionit.io"    
   tasks:
     - set_fact:
-        BEARER: "73316a9c-d67c-4b21-bf7f-130f44c3583f"
+        BEARER: "{{ lookup('cypher','secret=secret/userpass') }}"
         
     - name: Get Account IDs
       uri:
