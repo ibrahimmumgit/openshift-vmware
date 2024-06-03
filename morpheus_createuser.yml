@@ -62,7 +62,7 @@
           user:
             firstName: "{{ SUBTENANTNAME }}"
             lastName: "Admin"
-            username: "{{ SUBTENANTNAME }}admin2"
+            username: "{{ SUBTENANTNAME }}admin"
             email: "{{ SUBTENANTUSEREMAIL }}"
             password: "{{ SUBTENANTUSERPASSWORD }}"
             passwordConfirmation: "{{ SUBTENANTUSERPASSWORD }}"
