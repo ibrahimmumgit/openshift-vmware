@@ -1,11 +1,11 @@
 ---
-- name: This is to add user 
+- name: Morpheus create user 
   hosts: localhost
   gather_facts: yes
   vars: 
     SUBTENANTNAME: "{{ morpheus['customOptions']['subtenantnameInput'] }}"
-    subtenantemail: "{{ morpheus['customOptions']['subtenantuseremailInput'] }}"
-    subtenantpassword: "{{ morpheus['customOptions']['subtenantuserpwdInput'] }}"   
+    SUBTENANTUSEREMAIL: "{{ morpheus['customOptions']['subtenantuseremailInput'] }}"
+    SUBTENANTUSERPASSWORD: "{{ morpheus['customOptions']['subtenantuserpwdInput'] }}"   
     URL: "hpe-cmp.helionit.io"    
   tasks:
     - set_fact:
