@@ -6,8 +6,7 @@
     morpheus_server: "{{ morpheus['morpheus']['applianceUrl'] }}"
     BEARER: "{{ morpheus['morpheus']['apiAccessToken'] }}"
     tenantId: "{{  morpheus['accountId'] }}"
-
-    URL: "172.16.10.178"
+    zoneId: "5"
   tasks:
     - name: Create a group
       uri:
@@ -19,7 +18,7 @@
         body: |
           {
             "group": {
-              "name": "private_cloud"
+              "name": "private_cloud_api"
             }
           }
         body_format: json
@@ -33,3 +32,28 @@
     - name: Print result
       debug:
         var: GroupID
+
+    - name: PUT to update zones
+      uri:
+        url: "{{ morpheus_server }}api/accounts/{{ tenantId }}/groups/{{ GroupID }}/update-zones"
+        method: PUT
+        headers:
+          accept: "application/json"
+          content-type: "application/json"
+        body: |
+          {
+            "group": {
+              "zones": [
+                {
+                  "id": {{ zoneId }}
+                }
+              ]
+            }
+          }
+        body_format: json
+        return_content: yes
+      register: result
+
+    - name: Print result
+      debug:
+        var: result
