@@ -1,0 +1,80 @@
+---
+- name: This is to add user on instances
+  hosts: localhost
+  gather_facts: yes
+  vars:
+ 
+    URL: "hpe-cmp.helionit.io"
+    SUBTENANTNAME: "tenantfromansible09"    
+    SUBTENANTUSEREMAIL: "tenantfromansible021@test.com"
+    SUBTENANTUSERPASSWORD: "P@ssw0rd"  
+
+    
+  tasks:
+    - set_fact:
+        BEARER: "73316a9c-d67c-4b21-bf7f-130f44c3583f"
+        
+    - name: Get Account IDs
+      uri:
+        url: "https://{{ URL }}/api/accounts?max=25&offset=0&sort=name&direction=asc&name={{ SUBTENANTNAME }}"
+        method: GET
+        headers:
+          accept: "application/json"
+          Authorization: "Bearer {{ BEARER }}"
+        return_content: yes
+        validate_certs: no
+      register: response
+
+    - name: Extract Account IDs
+      set_fact:
+        TENANTID: "{{ response.json.accounts | map(attribute='id') | first }}"
+        
+    - name: Debug Response
+      debug:
+        var: TENANTID
+      
+    - name: Get USERROLEID 
+      uri:
+        url: "https://{{ URL }}/api/roles?phrase={{ SUBTENANTNAME }}role"
+        method: GET
+        headers:
+          accept: "application/json"
+          Authorization: "Bearer {{ BEARER }}"
+        return_content: yes
+        validate_certs: no
+      register: response
+
+    - name: Extract Account IDs
+      set_fact:
+        USERROLEID: "{{ response.json.roles | map(attribute='id') | first }}"
+        
+    - name: Debug Response
+      debug:
+        var: USERROLEID    
+        
+    - name: Create User
+      uri:
+        url: "https://{{ URL }}/api/accounts/{{ TENANTID }}/users"  
+        method: POST
+        headers:
+          Authorization: "Bearer {{ BEARER }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          user:
+            firstName: "{{ SUBTENANTNAME }}"
+            lastName: "Admin"
+            username: "{{ SUBTENANTNAME }}admin2"
+            email: "{{ SUBTENANTUSEREMAIL }}"
+            password: "{{ SUBTENANTUSERPASSWORD }}"
+            passwordConfirmation: "{{ SUBTENANTUSERPASSWORD }}"
+            receiveNotifications: "on"
+            roles:
+              - id: "{{ USERROLEID }}"
+        return_content: yes
+        validate_certs: no
+      register: response
+      
+    - name: Response
+      debug:
+        msg: "Response: {{ response }}"
