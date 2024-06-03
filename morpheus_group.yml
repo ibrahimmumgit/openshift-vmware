@@ -4,23 +4,32 @@
   gather_facts: yes
   vars: 
     morpheus_server: "{{ morpheus['morpheus']['applianceUrl'] }}"
-    bearer_token: "{{ morpheus['morpheus']['apiAccessToken'] }}"
-    tenant: "{{  morpheus['accountId'] }}"
-    tenantId: "{{  morpheus['tenantId'] }}"
+    BEARER: "{{ morpheus['morpheus']['apiAccessToken'] }}"
+    tenantId: "{{  morpheus['accountId'] }}"
+
     URL: "172.16.10.178"
   tasks:
-    - name: Print morpheus_server
-      debug:
-        msg: "morpheus_server: {{ morpheus_server }}"
-        
-    - name: Print bearer_token
-      debug:
-        msg: "bearer_token: {{ bearer_token }}"
+    - name: Create a group
+      uri:
+        url: "{{ morpheus_server }}api/groups"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ BEARER }}"
+          Content-Type: "application/json"
+        body: |
+          {
+            "group": {
+              "name": "private_cloud"
+            }
+          }
+        body_format: json
+        return_content: yes
+      register: result
+    
+    - name: Extract Group IDs
+      set_fact:
+        GroupID: "{{ response.json.group | map(attribute='id') | first }}"
 
-    - name: Print tenantId
+    - name: Print result
       debug:
-        msg: "tenantId: {{ tenant }}"
-
-    - name: Print tenant
-      debug:
-        msg: "tenant: {{ tenant }}"
+        var: GroupID
