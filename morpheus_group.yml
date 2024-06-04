@@ -97,6 +97,7 @@
         timeout: 60
         validate_certs: no
       register: result
+      
     - name: Update network
       uri:
         url: "{{ morpheus_server }}api/networks/{{ network_id }}"
