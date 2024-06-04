@@ -5,7 +5,7 @@
   vars: 
     morpheus_server: "{{ morpheus['morpheus']['applianceUrl'] }}"
     BEARER: "{{ morpheus['morpheus']['apiAccessToken'] }}"
-    tenantId: "{{  morpheus['accountId'] }}"
+    tenantId: "{{  morpheus['user']['accountId'] }}"
     zoneId: "7"
     datastore_id: "32"
     network_id: "113"
