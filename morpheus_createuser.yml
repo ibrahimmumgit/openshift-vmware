@@ -62,6 +62,50 @@
         body:
           user:
             firstName: "{{ SUBTENANTNAME }}"
+            lastName: "User"
+            username: "{{ SUBTENANTNAME }}user"
+            email: "{{ SUBTENANTUSEREMAIL }}"
+            password: "{{ SUBTENANTUSERPASSWORD }}"
+            passwordConfirmation: "{{ SUBTENANTUSERPASSWORD }}"
+            receiveNotifications: "on"
+            roles:
+              - id: "{{ USERROLEID }}"
+        return_content: yes
+        validate_certs: no
+      register: response
+
+    - name: Get USERROLEID 
+      uri:
+        url: "{{ morpheus_server }}api/roles?phrase={{ SUBTENANTNAME }}_admin_role"
+        method: GET
+        headers:
+          accept: "application/json"
+          Authorization: "Bearer {{ BEARER }}"
+        return_content: yes
+        validate_certs: no
+      register: response
+
+    - name: Extract Account IDs
+      set_fact:
+        USERROLEID: "{{ response.json.roles | map(attribute='id') | first }}"
+        
+    - name: Debug Response
+      debug:
+        var: USERROLEID    
+        
+ 
+      
+    - name: Create User
+      uri:
+        url: "{{ morpheus_server }}api/accounts/{{ TENANTID }}/users"  
+        method: POST
+        headers:
+          Authorization: "Bearer {{ BEARER }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          user:
+            firstName: "{{ SUBTENANTNAME }}"
             lastName: "Admin"
             username: "{{ SUBTENANTNAME }}admin"
             email: "{{ SUBTENANTUSEREMAIL }}"
@@ -73,7 +117,6 @@
         return_content: yes
         validate_certs: no
       register: response
-      
     - name: Response
       debug:
         msg: "Response: {{ response }}"
