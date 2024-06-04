@@ -37,7 +37,7 @@
               "tenantPermissions": [
                 {
                   "accounts": [
-                    {{ zoneId }}  
+                    {{ tenantId }}  
                   ]
                 }
               ]
@@ -69,7 +69,7 @@
               "tenantPermissions": [
                 {
                   "accounts": [
-                    {{ zoneId }}  
+                    {{ tenantId }}  
                   ]
                 }
               ]
@@ -103,7 +103,7 @@
               "tenantPermissions": [
                 {
                   "accounts": [
-                    {{ zoneId }}  
+                    {{ tenantId }}  
                   ]
                 }
               ]
@@ -130,7 +130,7 @@
               "tenantPermissions": [
                 {
                   "accounts": [
-                    {{ zoneId }}  
+                    {{ tenantId }}  
                   ]
                 }
               ]
