@@ -19,4 +19,8 @@
     - name: Debug tenantId
       debug:
         msg: "tenantId: {{ tenantId }}"
+
+    - name: Debug tenantId
+      debug:
+        msg: "{{ morpheus }}"
       
