@@ -30,7 +30,7 @@
               "visibility": "private",
               "tenantPermissions": [
                 {
-                  "accounts": [
+                  "accounts": [ 1,
                     {{ tenantId }}  
                   ]
                 }
@@ -57,7 +57,7 @@
               "visibility": "private",
               "tenantPermissions": [
                 {
-                  "accounts": [
+                  "accounts": [ 1,
                     {{ tenantId }}  
                   ]
                 }
@@ -84,7 +84,7 @@
               "visibility": "private",
               "tenantPermissions": [
                 {
-                  "accounts": [
+                  "accounts": [ 1,
                     {{ tenantId }}  
                   ]
                 }
@@ -109,9 +109,12 @@
             "network": {
               "visibility": "private",
               "tenants": [
-                {
-                  "id": {{ tenantId }}
-                }
+                    {
+                      "id": 1
+                    },
+                    {
+                      "id": {{ tenantId }}
+                    }              
               ]
             }
           }
