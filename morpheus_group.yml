@@ -98,28 +98,5 @@
         validate_certs: no
       register: result
       
-    - name: Update network
-      uri:
-        url: "{{ morpheus_server }}api/networks/{{ network_id }}"
-        method: PUT
-        headers:
-          accept: "application/json"
-          authorization: "{{ BEARER }}"
-          content-type: "application/json"
-        body: |
-          {
-            "network": {
-              "visibility": "private",
-              "tenants": [
-                {
-                  "id": 1
-                }
-              ]
-            }
-          }
-        body_format: json
-        return_content: yes
-        timeout: 60
-        validate_certs: no
-      register: result
+
       
