@@ -60,8 +60,8 @@
           content-type: "application/json"
         body: |
           {
-            "access": "none",
-            "cloudId": 6
+            "access": "full",
+            "cloudId": 7
           }
         body_format: json
         return_content: yes
