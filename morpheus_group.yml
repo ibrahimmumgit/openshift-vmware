@@ -27,11 +27,11 @@
         body: |
           {
             "resourcePool": {
-              "visibility": "private",
+              "visibility": "public",
               "tenantPermissions": [
                 {
-                  "accounts": [ 1,
-                    {{ tenantId }}  
+                  "accounts": [ 
+                    1
                   ]
                 }
               ]
@@ -54,11 +54,12 @@
         body: |
           {
             "datastore": {
-              "visibility": "private",
+              "visibility": "public",
               "tenantPermissions": [
                 {
-                  "accounts": [ 1,
-                    {{ tenantId }}  
+                  "accounts": [ 
+                  1
+                    
                   ]
                 }
               ]
@@ -81,11 +82,11 @@
         body: |
           {
             "folder": {
-              "visibility": "private",
+              "visibility": "public",
               "tenantPermissions": [
                 {
-                  "accounts": [ 1,
-                    {{ tenantId }}  
+                  "accounts": [ 
+                    1  
                   ]
                 }
               ]
@@ -107,14 +108,11 @@
         body: |
           {
             "network": {
-              "visibility": "private",
+              "visibility": "public",
               "tenants": [
                     {
                       "id": 1
-                    },
-                    {
-                      "id": {{ tenantId }}
-                    }              
+                    }           
               ]
             }
           }
