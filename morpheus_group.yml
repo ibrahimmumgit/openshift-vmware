@@ -10,6 +10,7 @@
     datastore_id: "2"
     network_id: "3"
     resource_pools_id: "1"
+    folder_id: ""
   tasks:
     - set_fact:
         #BEARER_MASTER: "{{ lookup('cypher','secret=secret/morpheusapi') }}"
@@ -81,6 +82,38 @@
         validate_certs: no
       register: result
 
-
+    - name: Update Folder
+      uri:
+        url: "{{ morpheus_server }}/api/zones/{{ zoneId }}/folders/{{ folder_id }}"
+        method: PUT
+        headers:
+          accept: "application/json"
+          authorization: "Bearer {{ BEARER_MASTER }}"
+          content-type: "application/json"
+        body: |
+          {
+            "folder": {
+              "defaultFolder": false,
+              "defaultImage": false,
+              "visibility": "private",
+              "resourcePermissions": {
+                "all": true,
+                "allPlans": true
+              },
+              "active": true,
+              "tenantPermissions": [
+                {
+                  "accounts": [
+                    {{ zoneId }}  
+                  ]
+                }
+              ]
+            }
+          }
+        body_format: json
+        return_content: yes
+        timeout: 60
+        validate_certs: no
+      register: result
 
     
