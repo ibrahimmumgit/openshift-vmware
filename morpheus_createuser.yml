@@ -62,7 +62,7 @@
         body:
           user:
             firstName: "{{ SUBTENANTNAME }}"
-            lastName: "User"
+            lastName: "user"
             username: "{{ SUBTENANTNAME }}user"
             email: "{{ SUBTENANTUSEREMAIL }}"
             password: "{{ SUBTENANTUSERPASSWORD }}"
@@ -106,7 +106,7 @@
         body:
           user:
             firstName: "{{ SUBTENANTNAME }}"
-            lastName: "Admin"
+            lastName: "admin"
             username: "{{ SUBTENANTNAME }}admin"
             email: "{{ SUBTENANTUSEREMAIL }}"
             password: "{{ SUBTENANTUSERPASSWORD }}"
