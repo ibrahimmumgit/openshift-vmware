@@ -139,7 +139,7 @@
 
     - name: Get USERROLEID 
       uri:
-        url: "{{ morpheus_server }}api/roles?phrase={{ SUBTENANTNAME }}role"
+        url: "{{ morpheus_server }}api/roles?phrase={{ SUBTENANTNAME }}_user_role"
         method: GET
         headers:
           accept: "application/json"
