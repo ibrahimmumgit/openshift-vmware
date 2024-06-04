@@ -114,8 +114,7 @@
     - name: Debug Response
       debug:
         var: TENANTID
-
-
+        
     - name: create-multi-tenant-user-role
       uri:
         url: "{{ morpheus_server }}api/roles"
@@ -137,9 +136,30 @@
       ignore_errors: yes
       register: response
 
+    - name: create-multi-tenant-user-role
+      uri:
+        url: "{{ morpheus_server }}api/roles"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ BEARER }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          role:
+            authority: "{{ SUBTENANTNAME }}_useradmin_role"
+            description: "Multi-tenant user role. Admin role for subtenants"
+            roleType: "user"
+            baseRoleId: 83
+            multitenant: true
+            multitenantLocked: false
+        return_content: yes
+        validate_certs: no
+      ignore_errors: yes
+      register: response
+
     - name: Get USERROLEID 
       uri:
-        url: "{{ morpheus_server }}api/roles?phrase={{ SUBTENANTNAME }}_user_role"
+        url: "{{ morpheus_server }}api/roles?phrase={{ SUBTENANTNAME }}_useradmin_role"
         method: GET
         headers:
           accept: "application/json"
