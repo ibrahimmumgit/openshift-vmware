@@ -7,10 +7,10 @@
     BEARER: "{{ morpheus['morpheus']['apiAccessToken'] }}"
     tenantId: "{{  morpheus['accountId'] }}"
     zoneId: "7"
-    datastore_id: "2"
-    network_id: "3"
-    resource_pools_id: "1"
-    folder_id: ""
+    datastore_id: "32"
+    network_id: "113"
+    resource_pools_id: "54"
+    folder_id: "9"
   tasks:
     - set_fact:
         #BEARER_MASTER: "{{ lookup('cypher','secret=secret/morpheusapi') }}"
