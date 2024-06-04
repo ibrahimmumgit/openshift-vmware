@@ -108,12 +108,7 @@
         body: |
           {
             "network": {
-              "visibility": "public",
-              "tenants": [
-                    {
-                      "id": 1
-                    }           
-              ]
+              "visibility": "public"
             }
           }
         body_format: json
