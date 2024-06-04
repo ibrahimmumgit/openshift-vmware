@@ -126,7 +126,7 @@
         body_format: json
         body:
           role:
-            authority: "{{ SUBTENANTNAME }}role"
+            authority: "{{ SUBTENANTNAME }}_user_role"
             description: "Multi-tenant user role. Base role for subtenants"
             roleType: "user"
             baseRoleId: 83
