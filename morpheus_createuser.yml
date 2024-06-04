@@ -67,6 +67,8 @@
             email: "{{ SUBTENANTUSEREMAIL }}"
             password: "{{ SUBTENANTUSERPASSWORD }}"
             passwordConfirmation: "{{ SUBTENANTUSERPASSWORD }}"
+            linuxUsername: "{{ SUBTENANTNAME }}user"
+            linuxPassword: "{{ SUBTENANTUSERPASSWORD }}"
             receiveNotifications: "on"
             roles:
               - id: "{{ USERROLEID }}"
@@ -111,6 +113,8 @@
             email: "{{ SUBTENANTUSEREMAIL }}"
             password: "{{ SUBTENANTUSERPASSWORD }}"
             passwordConfirmation: "{{ SUBTENANTUSERPASSWORD }}"
+            linuxUsername: "{{ SUBTENANTNAME }}user"
+            linuxPassword: "{{ SUBTENANTUSERPASSWORD }}"
             receiveNotifications: "on"
             roles:
               - id: "{{ USERROLEID }}"
