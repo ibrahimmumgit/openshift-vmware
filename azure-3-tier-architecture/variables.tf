@@ -61,6 +61,7 @@ variable "web_os_password" {
     description = "This specifies the passoword of the web-vm"
     type = string
     default = "Password!234"
+sensitive   = true
 }
 
 variable "app_host_name" {
