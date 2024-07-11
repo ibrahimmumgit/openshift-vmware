@@ -80,6 +80,7 @@ variable "app_os_password" {
     description = "This specifies the password of the app-vm"
     default = "Password!234"
     type = string
+sensitive   = true
 }
 
 variable "dev_database" {
@@ -103,5 +104,6 @@ variable "dev_database_password" {
     description = "This specifies the administrator login password"
     type = string
     default = "Password!234"
+sensitive   = true
 }
 
