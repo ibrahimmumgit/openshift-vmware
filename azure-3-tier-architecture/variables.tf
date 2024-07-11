@@ -2,6 +2,21 @@
 //     description = "This specifies the resource group of the virtual machine"
 //     type = string
 // }   
+variable "subscription_id" {
+  sensitive = true
+}
+
+variable "client_id" {
+  sensitive = true
+}
+
+variable "client_secret" {
+  sensitive = true
+}
+
+variable "tenant_id" {
+  sensitive = true
+}
 
 variable "location" {
      description = "This specifies the location of the virtual machine" 
