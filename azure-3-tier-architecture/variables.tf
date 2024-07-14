@@ -1,7 +1,8 @@
-// variable "resource_group" {
-//     description = "This specifies the resource group of the virtual machine"
-//     type = string
-// }   
+variable "resource_group" {
+    description = "This specifies the resource group of the virtual machine"
+    type = string
+}   
+
 variable "subscription_id" {
   sensitive = true
 }
