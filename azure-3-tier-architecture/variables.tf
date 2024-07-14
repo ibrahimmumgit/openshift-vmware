@@ -22,7 +22,7 @@ variable "tenant_id" {
 
 variable "location" {
      description = "This specifies the location of the virtual machine" 
-     default = "eastus"
+     default = "centralindia"
      type = string
 }
 
