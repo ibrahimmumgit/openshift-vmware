@@ -1,5 +1,6 @@
 variable "resource_group" {
     description = "This specifies the resource group of the virtual machine"
+    default = "3tier-app"
     type = string
 }   
 
