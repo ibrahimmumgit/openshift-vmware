@@ -52,10 +52,9 @@ module "database" {
   resource_group = azurerm_resource_group.dev.name
   data-subnet-id = module.networking.db_subnet_id
 
-  dev_database = var.sql_database
+
   dev_database_version = "12.0"
-  dev_database_admin = "db-admin"
-  dev_database_password = "Abcd@1234"
+
 }
 
 module "pip" {
