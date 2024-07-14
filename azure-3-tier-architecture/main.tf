@@ -51,8 +51,9 @@ module "database" {
   location = azurerm_resource_group.dev.location
   resource_group = azurerm_resource_group.dev.name
   data-subnet-id = module.networking.db_subnet_id
-
-
+  dev_database = var.dev_database
+  dev_database_admin = var.dev_database_admin
+  dev_database_password = var.dev_database_password
   dev_database_version = "12.0"
 
 }
