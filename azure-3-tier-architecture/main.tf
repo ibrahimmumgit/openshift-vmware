@@ -1,6 +1,6 @@
 # Create resource group
 resource "azurerm_resource_group" "dev" {
-  name     =  var.resourcegroup.name
+  name     =  var.resource_group.name
   location = "eastus"
 }
 
