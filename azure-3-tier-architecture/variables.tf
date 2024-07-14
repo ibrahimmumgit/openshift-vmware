@@ -64,7 +64,7 @@ variable "location" {
 variable "web_host_name" {
     description = "This specifies the host name of the web-vm"
     type = string
-    default = "web_tier"
+    default = "webtier"
 }
 
 variable "web_username" {
@@ -84,7 +84,7 @@ sensitive   = true
 variable "app_host_name" {
     description = "This specifies the host name of the app-vm"
     type = string
-    default = "app_tier"
+    default = "apptier"
 }
 
 variable "app_username" {
@@ -103,7 +103,7 @@ sensitive   = true
 variable "dev_database" {
     description = "This specifies the database name"
     type = string
-    default = "db_tier"
+    default = "dbtier"
 }
 
 // variable "dev_database_version" {
