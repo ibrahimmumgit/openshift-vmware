@@ -13,7 +13,7 @@ resource "azurerm_service_plan" "asplinux" {
   sku_name               = var.sku_size_linux
   zone_balancing_enabled = var.environment == "PROD" && var.zone_redundant
   worker_count           = var.linux_instance_count
-  app_service_environment_id = contains(local.sku_isolated_size, var.sku_size_linux) ? null : (var.environment == "PROD" && var.zone_redundant == "true" ? "/subscriptions/e2c2906c-8901-4443-a9ee-50ffe123541a/resourceGroups/PTAZSG-IAC-PROD-ASE04-RG/providers/Microsoft.Web/hostingEnvironments/ptsg-1iacase03" :
+  #app_service_environment_id = contains(local.sku_isolated_size, var.sku_size_linux) ? null : (var.environment == "PROD" && var.zone_redundant == "true" ? "/subscriptions/e2c2906c-8901-4443-a9ee-50ffe123541a/resourceGroups/PTAZSG-IAC-PROD-ASE04-RG/providers/Microsoft.Web/hostingEnvironments/ptsg-1iacase03" :
     var.environment == "PROD" ? "/subscriptions/e2c2906c-8901-4443-a9ee-50ffe123541a/resourceGroups/PTAZSG-IAC-PROD-ASE03-RG/providers/Microsoft.Web/hostingEnvironments/ptsg-1iacase03" :
     var.environment == "UAT" ? "/subscriptions/1c334150-08b8-4088-9170-074fa26a9926/resourceGroups/PTAZSG-IAC-UAT-ASE01-RG/providers/Microsoft.Web/hostingEnvironments/ptsg-4iacase01" :
     "/subscriptions/2be5068f-e0ac-4d57-aedc-96bc9798a265/resourceGroups/PTAZSG-IAC-DEV-ASE02-RG/providers/Microsoft.Web/hostingEnvironments/ptsg-5ase02"
@@ -34,7 +34,7 @@ resource "azurerm_service_plan" "aspwindows" {
   os_type             = "Windows"
   sku_name            = var.sku_size_windows
   worker_count        = var.windows_instance_count
-  app_service_environment_id = contains(local.sku_isolated_size, var.sku_size_windows) ? null : (var.environment == "PROD" && var.zone_redundant == "true" ? "/subscriptions/e2c2906c-8901-4443-a9ee-50ffe123541a/resourceGroups/PTAZSG-IAC-PROD-ASE04-RG/providers/Microsoft.Web/hostingEnvironments/ptsg-1iacase03" :
+  #app_service_environment_id = contains(local.sku_isolated_size, var.sku_size_windows) ? null : (var.environment == "PROD" && var.zone_redundant == "true" ? "/subscriptions/e2c2906c-8901-4443-a9ee-50ffe123541a/resourceGroups/PTAZSG-IAC-PROD-ASE04-RG/providers/Microsoft.Web/hostingEnvironments/ptsg-1iacase03" :
     var.environment == "PROD" ? "/subscriptions/e2c2906c-8901-4443-a9ee-50ffe123541a/resourceGroups/PTAZSG-IAC-PROD-ASE03-RG/providers/Microsoft.Web/hostingEnvironments/ptsg-1iacase03" :
     var.environment == "UAT" ? "/subscriptions/1c334150-08b8-4088-9170-074fa26a9926/resourceGroups/PTAZSG-IAC-UAT-ASE01-RG/providers/Microsoft.Web/hostingEnvironments/ptsg-4iacase01" :
     "/subscriptions/2be5068f-e0ac-4d57-aedc-96bc9798a265/resourceGroups/PTAZSG-IAC-DEV-ASE02-RG/providers/Microsoft.Web/hostingEnvironments/ptsg-5ase02"
