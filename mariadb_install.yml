@@ -1,16 +1,45 @@
 ---
-- name: This sets up an mysql master server
+- name: Ensure MariaDB (MySQL) is installed and running on CentOS, Ubuntu, or Windows
   hosts: all
   gather_facts: yes
   become: yes
   become_method: sudo
   tasks:
-  - name: Install mysql packages 
-    apt:
-      name: mariadb-server
-      state: present
-  - name: ensure mysql is running
-    service:
-      name: mariadb 
-      state: started
-      
+    - name: Install MariaDB on CentOS
+      yum:
+        name: mariadb-server
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Ensure MariaDB is running on CentOS
+      service:
+        name: mariadb
+        state: started
+      when: ansible_os_family == "RedHat"
+
+    - name: Install MariaDB on Ubuntu
+      apt:
+        name: mariadb-server
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Ensure MariaDB is running on Ubuntu
+      service:
+        name: mariadb
+        state: started
+      when: ansible_os_family == "Debian"
+
+    - name: Install MariaDB on Windows
+      win_chocolatey:
+        name: mariadb
+        state: present
+      when: ansible_os_family == "Windows"
+
+    - name: Ensure MariaDB is running on Windows
+      win_service:
+        name: mariadb
+        start_mode: auto
+        state: started
+      when: ansible_os_family == "Windows"
+
