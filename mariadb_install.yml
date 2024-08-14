@@ -6,7 +6,7 @@
   #become_method: sudo
   tasks:
   - name: Install mysql packages 
-    yum:
+    apt:
       name: mariadb-server
       state: present
   - name: ensure mysql is running
