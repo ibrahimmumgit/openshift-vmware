@@ -1,0 +1,15 @@
+repos:
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.86.0 # Get the latest from: https://github.com/antonbabenko/pre-commit-terraform/releases
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_validate
+      # - id: terraform_docs
+      #   args:
+      #     - --hook-config=--path-to-file=README.md
+      #     - --hook-config=--create-file-if-not-exist=true
+  - repo: https://github.com/terraform-docs/terraform-docs
+    rev: v0.17.0
+    hooks:
+      - id: terraform-docs-system
+        args: ["--output-file", "README.md", "--lockfile=false", "."]

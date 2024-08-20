@@ -1,0 +1,38 @@
+formatter: markdown table
+content: |-
+  # AWS S3 Terraform module
+
+  Terraform module which creates AWS S3 resources.
+
+  ## Examples
+
+  See the **/examples** directory for working examples to reference
+
+  - [Basic](examples/basic)
+  - [Complete](examples/complete)
+
+  ## Usage
+
+  ### Basic
+
+  ```hcl
+  {{ include "examples/basic/main.tf" }}
+  ```
+
+  ### Complete
+
+  ```hcl
+  {{ include "examples/complete/main.tf" }}
+  ```
+
+  {{ .Requirements }}
+
+  {{ .Providers }}
+
+  {{ .Modules }}
+
+  {{ .Resources }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}
