@@ -1,6 +1,6 @@
 ---
 - name: Ensure MariaDB (MySQL) is installed and running on CentOS, Ubuntu, or Windows
-  hosts: terraform_vms
+  hosts: all
   gather_facts: yes
   become: yes
   become_method: sudo
