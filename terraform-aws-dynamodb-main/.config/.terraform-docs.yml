@@ -1,0 +1,31 @@
+formatter: markdown table
+content: |-
+  # AWS DynamoDB Terraform module
+
+  Terraform module which creates AWS DynamoDB resources.
+
+  ## Examples
+
+  See the **/examples** directory for working examples to reference
+
+  - [Complete](examples/complete)
+
+  ## Usage
+
+  ### Complete
+
+  ```hcl
+  {{ include "examples/complete/main.tf" }}
+  ```
+
+  {{ .Requirements }}
+
+  {{ .Providers }}
+
+  {{ .Modules }}
+
+  {{ .Resources }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}
