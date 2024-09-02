@@ -201,3 +201,11 @@ variable "object_ownership" {
   type        = string
   default     = "ObjectWriter"
 }
+
+
+variable "aws_secret_key" {
+
+}
+variable "aws_access_key" {
+
+}
