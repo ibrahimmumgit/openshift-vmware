@@ -1,0 +1,7 @@
+---
+- name: Run a command on Windows using win_shell
+  hosts: all
+  tasks:
+    - name: Run a PowerShell command to get system info
+      win_shell: |
+        Get-ComputerInfo | Select-Object CsName, WindowsVersion, WindowsBuildLabEx
