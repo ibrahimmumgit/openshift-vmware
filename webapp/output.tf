@@ -8,6 +8,10 @@ output "web_app_windows" {
   description = "URLs of the Windows webtion Apps"
 }
 
+output "linux_content" {
+  value       = local_file.linux_web_app_names_file[0].content
+
+}
 
 
 
