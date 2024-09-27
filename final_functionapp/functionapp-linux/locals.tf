@@ -1,9 +1,9 @@
 locals {
   #define the sku size which is required the app_service_environment_id
   sku_isolated_size         = ["B1", "B2", "B3", "S1", "S2", "S3"]
-  parts                     = var.resource_group_name != null ? split("-", var.resource_group_name) : []
-  environment               = var.resource_group_name != null ? local.parts[2] : ""
-  applicationname           = var.resource_group_name != null ? lower(local.parts[3]) : ""
+  parts                     = var.create_new_resource_group ? [] : var.resource_group_name != null ? split("-", var.resource_group_name) : []
+  environment               = var.create_new_resource_group ? [] : var.resource_group_name != null ? local.parts[2] : ""
+  applicationname           = var.create_new_resource_group ? [] : var.resource_group_name != null ? lower(local.parts[3]) : ""
   effective_environment     = var.create_new_resource_group ? var.environment : local.environment
   effective_applicationname = var.create_new_resource_group ? var.applicationname : local.applicationname
   effective_locaion         = var.create_new_resource_group ? var.location : data.azurerm_resource_group.rg[0].location
