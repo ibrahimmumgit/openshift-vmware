@@ -134,13 +134,6 @@ variable "zone_redundant" {
 }
 
 
-variable "zone_redundant" {
-  description = "Enable zone redundancy if the environment is production."
-  type        = bool
-  default     = false
-}
-
-
 variable "enable_monitoring" {
   description = "Flag to indicate whether to enable monitoring."
   type        = bool
