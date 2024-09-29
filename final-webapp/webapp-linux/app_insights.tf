@@ -18,7 +18,6 @@ resource "azurerm_application_insights" "aai" {
   application_type    = "other"
   tags                = local.common_tags
   depends_on = [
-    azurerm_resource_group.rg,
-    azurerm_storage_account.asa
+    azurerm_resource_group.rg
   ]
 }
