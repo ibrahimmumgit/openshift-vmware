@@ -170,7 +170,7 @@ variable "application_insights_resource_group_name" {
 variable "create_new_identity_access" {
   description = "Flag to indicate whether to create a new user identity."
   type        = bool
-  default     = true
+  default     = false
 }
 
 
