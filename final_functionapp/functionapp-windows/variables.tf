@@ -88,7 +88,7 @@ variable "runtime_version_windows" {
 variable "create_storage_account" {
   description = "Flag to indicate whether to create a new storage account."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "storage_account_name" {
@@ -133,6 +133,79 @@ variable "zone_redundant" {
   default     = false
 }
 
+
+
+
+variable "enable_monitoring" {
+  description = "Flag to indicate whether to enable monitoring."
+  type        = bool
+  default     = false
+
+}
+
+variable "create_new_application_insigts" {
+  description = "Flag to indicate whether to create a new Application Insights instance."
+  type        = bool
+  default     = false
+
+}
+
+variable "sku" {
+  description = "The SKU for the Log Analytics Workspace"
+  type        = string
+  default     = "PerGB2018"
+}
+variable "application_insights_name" {
+  description = "Name of the existing Application Insights instance."
+  type        = string
+  default     = null
+
+}
+
+variable "application_insights_resource_group_name" {
+  description = "Name of the resource group for the existing Application Insights instance."
+  type        = string
+  default     = null
+
+}
+
+variable "create_new_identity_access" {
+  description = "Flag to indicate whether to create a new user identity."
+  type        = bool
+  default     = false
+}
+
+
+variable "identity_access" {
+  description = "Name of identity access"
+  type        = string
+  default     = "SystemAssigned, UserAssigned" # Set this to the name of the user-assigned identity if needed
+}
+
+variable "identity_name" {
+  description = "Name of the user-assigned identity"
+  type        = string
+  default     = null # Set this to the name of the user-assigned identity if needed
+}
+
+variable "identity_name_resource_group_name" {
+  description = "Name of the resource group for the existing identity name."
+  type        = string
+  default     = null
+
+}
+
+variable "role_access" {
+  description = "The email of the Azure AD user or the name of the Azure AD group to assign the role to."
+  type        = string
+  default     = null
+}
+
+variable "custom_role_name" {
+  description = "Custom Role name"
+  type        = string
+  default     = null
+}
 
 
 

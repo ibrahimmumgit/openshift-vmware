@@ -52,9 +52,26 @@ data "local_file" "flinux_function_app_names_from_file" {
   filename = "${path.module}/linux_function_app_names.txt"
 }
 
-
+# Data source for existing Application Insights instance (used when create_new_application_insigts is false)
+data "azurerm_application_insights" "aai" {
+  count               = var.enable_monitoring && var.create_new_application_insigts != true ? 1 : 0
+  name                = var.application_insights_name
+  resource_group_name = var.application_insights_resource_group_name
+}
 
 # Data source to retrieve the client configuration
 data "azurerm_client_config" "current" {}
+
+data "azuread_group" "group" {
+  count        = var.create_new_resource_group ? 1 : 0
+  display_name = var.role_access
+}
+
+data "azurerm_role_definition" "custom" {
+  count = var.create_new_resource_group && var.custom_role_name != null ? 1 : 0
+  name  = var.custom_role_name
+  scope = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
+}
+
 
 

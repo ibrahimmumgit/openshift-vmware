@@ -9,9 +9,15 @@ resource "azurerm_linux_function_app" "funcapp_linux" {
   https_only                    = true
   enabled                       = true
   public_network_access_enabled = false
+  identity {
+    type         = var.identity_access == "SystemAssigned" ? "SystemAssigned" : "SystemAssigned, UserAssigned"
+    identity_ids = var.identity_access == "SystemAssigned" ? null : [var.identity_name != null ? data.azurerm_user_assigned_identity.uai[0].id : azurerm_user_assigned_identity.uai[0].id]
+  }
   site_config {
-    minimum_tls_version = "1.2"
-    application_stack {
+    minimum_tls_version                    = "1.2"
+    application_insights_connection_string = var.enable_monitoring && length(azurerm_application_insights.aai) > 0 ? azurerm_application_insights.aai[0].connection_string : (length(data.azurerm_application_insights.aai) > 0 ? data.azurerm_application_insights.aai[0].connection_string : null)
+    application_insights_key               = var.enable_monitoring && length(azurerm_application_insights.aai) > 0 ? azurerm_application_insights.aai[0].instrumentation_key : (length(data.azurerm_application_insights.aai) > 0 ? data.azurerm_application_insights.aai[0].instrumentation_key : null)
+     application_stack {
       java_version            = var.runtime_stack_linux == "java" ? var.runtime_version_linux : null
       dotnet_version          = var.runtime_stack_linux == "dotnet" ? var.runtime_version_linux : null
       node_version            = var.runtime_stack_linux == "node" ? var.runtime_version_linux : null
