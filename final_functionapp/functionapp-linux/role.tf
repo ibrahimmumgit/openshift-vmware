@@ -4,7 +4,6 @@ resource "azurerm_role_assignment" "reader" {
   role_definition_id = data.azurerm_role_definition.custom[count.index].role_definition_id
   principal_id       = data.azuread_group.group[count.index].object_id
   depends_on = [
-    azurerm_resource_group.rg,
-    azurerm_storage_account.asa
+    azurerm_resource_group.rg
   ]
 }
