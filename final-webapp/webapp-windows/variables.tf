@@ -212,16 +212,16 @@ variable "custom_role_name" {
 
 #subscription
 variable "subscription_id" {
-  sensitive = false
+  sensitive = true
 }
 variable "client_id" {
-  sensitive = false
+  sensitive = true
 }
 variable "client_secret" {
-  sensitive = false
+  sensitive = true
 }
 variable "tenant_id" {
-  sensitive = false
+  sensitive = true
 }
 
 variable "rg_prefix" {
