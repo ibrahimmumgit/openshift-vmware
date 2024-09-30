@@ -88,7 +88,7 @@ variable "runtime_version_linux" {
 variable "create_storage_account" {
   description = "Flag to indicate whether to create a new storage account."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "storage_account_name" {
