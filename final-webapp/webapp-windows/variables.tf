@@ -88,7 +88,7 @@ variable "runtime_version_windows" {
 variable "create_storage_account" {
   description = "Flag to indicate whether to create a new storage account."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "storage_account_name" {
@@ -169,7 +169,7 @@ variable "application_insights_resource_group_name" {
 variable "create_new_identity_access" {
   description = "Flag to indicate whether to create a new user identity."
   type        = bool
-  default     = true
+  default     = false
 }
 
 
@@ -212,16 +212,16 @@ variable "custom_role_name" {
 
 #subscription
 variable "subscription_id" {
-  sensitive = true
+  sensitive = false
 }
 variable "client_id" {
-  sensitive = true
+  sensitive = false
 }
 variable "client_secret" {
-  sensitive = true
+  sensitive = false
 }
 variable "tenant_id" {
-  sensitive = true
+  sensitive = false
 }
 
 variable "rg_prefix" {
