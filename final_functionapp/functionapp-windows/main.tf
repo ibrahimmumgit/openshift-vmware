@@ -2,8 +2,8 @@ resource "azurerm_windows_function_app" "funcapp_windows" {
   count                         = var.windows_funcapp_count
   name                          = lower(local.windows_funcapp_names[count.index])
   resource_group_name           = var.create_new_resource_group ? azurerm_resource_group.rg[0].name : data.azurerm_resource_group.rg[0].name
-  #location                      = var.create_new_resource_group ? azurerm_resource_group.rg[0].location : data.azurerm_resource_group.rg[0].location
-  location = var.location
+  location                      = var.create_new_resource_group ? azurerm_resource_group.rg[0].location : data.azurerm_resource_group.rg[0].location
+  #location = var.location
   service_plan_id               = var.create_new_service_plan ? azurerm_service_plan.aspwindows[0].id : data.azurerm_service_plan.details[0].id
   storage_account_name          = var.create_storage_account ? azurerm_storage_account.asa[0].name : data.azurerm_storage_account.asa[0].name
   storage_account_access_key    = var.create_storage_account ? azurerm_storage_account.asa[0].primary_access_key : data.azurerm_storage_account.asa[0].primary_access_key
