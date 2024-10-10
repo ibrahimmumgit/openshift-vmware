@@ -31,11 +31,7 @@ variable "resource_group_name" {
   type        = string
   default     = "test"
 }
-variable "resource_group_name1" {
-  description = "Name of the existing resource group."
-  type        = string
 
-}
 
 variable "create_new_resource_group" {
   description = "Flag to indicate whether to create a new resource group."
