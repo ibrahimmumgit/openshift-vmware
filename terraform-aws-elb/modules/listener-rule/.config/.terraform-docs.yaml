@@ -1,0 +1,31 @@
+formatter: markdown table
+content: |-
+  # AWS Load Balancer Listener Rule Terraform module
+
+  Terraform module which creates AWS Load Balancer Listener Rule resources.
+
+  ## Examples
+
+  See the **/examples** directory for working examples to reference
+
+  - [Basic](https://dev.azure.com/petronasvsts/PETRONAS_AWS_IAC_Module/_git/terraform-aws-elb?path=/modules/listener-rule/examples&version=GBmaster)
+
+  ## Usage
+
+  ### Basic
+
+  ```hcl
+  {{ include "examples/basic/main.tf" }}
+  ```
+
+  {{ .Requirements }}
+
+  {{ .Providers }}
+
+  {{ .Modules }}
+
+  {{ .Resources }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}
