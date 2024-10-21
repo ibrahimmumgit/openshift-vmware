@@ -8,6 +8,6 @@ module "alb" {
   delete_protection = var.delete_protection
   idle_timeout      = var.idle_timeout
   tags              = merge({ Name = var.alb_name }, var.tags)
-  app_prefix = "test"
+  #app_prefix = "test"
 }
  
