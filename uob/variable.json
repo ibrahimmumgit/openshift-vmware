@@ -1,0 +1,30 @@
+{
+  "vsphere_user": "administrator@vsphere.local",
+  "VSPHERE_PASSWORD": "VMware1!",
+  "virtual_machines_linux_vmvmttsgv09_sg": {
+        "vm1": {
+          "vsphere_cluster": "dojo9-vmware",
+          "vsphere_datastore": "datastore3-1",
+          "vsphere_network": "MGMT-PG",
+          "vsphere_dc": "c3",
+          "vm_template" : "Morpheus CentOS 7.9 20240304",
+          "name": "cmp-uob-01",
+          "ipv4_address": "192.168.9.74",
+          "ipv4_netmask": 24,
+          "ipv4_gateway": "192.168.9.254",
+          "dns_server": "192.168.9.254",
+          "vm_domain": "testlab.local",
+          "memory": 4096,
+          "logical_cpu": 2,
+          "guest_id"   : "centos64Guest",
+          "os_disk_size": 25,
+          "px_disk_size": 20,
+          "vm_linked_clone" : "false",
+          "serverpassword": "pass123",
+          "OS" : "linux",
+          "vsphere" : "vmvmttsgv09_sg",
+          "vm" : "db",
+          "scsi_controller_count" : "4"
+        }
+  }  
+}
