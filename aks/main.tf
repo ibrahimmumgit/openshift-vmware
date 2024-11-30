@@ -45,7 +45,7 @@ dynamic "azure_active_directory_role_based_access_control" {
   default_node_pool {
     #name                 = lower("${var.rg_prefix}${(local.effective_environment == "PROD") ? "-1${local.effective_applicationname}${local.next_aksnode_name}" : local.effective_environment == "UAT" ? "-4${local.effective_applicationname}${local.next_aksnode_name}" : "-5${local.effective_applicationname}${local.next_aksnode_name}"}")
     name                        = var.node_pool_name #lower("${local.effective_applicationname}${local.next_aksnode_name}")
-    node_count                  = var.node_count
+    #node_count                  = var.node_count
     vm_size                     = var.node_vm_size
     os_disk_size_gb             = 30
     os_sku                      = var.os_sku
