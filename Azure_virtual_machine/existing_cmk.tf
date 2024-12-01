@@ -1,7 +1,7 @@
 data "azurerm_key_vault" "cmk_vault" {
 
-  resource_group_name = local.effective_environment == "PROD" ? "PTAZSG-IAC-PROD-CMK-RG" : local.effective_environment == "UAT" ? "PTAZSG-IAC-UAT-STGONE-RG" : "PTAZSG-IAC-DEV-CMK-RG"
-  name                = local.effective_environment == "PROD" ? "PTAZSG-1CMK-KV" : local.effective_environment == "UAT" ? "ptazsg-4stgone-kv-01" : "PTAZSG-5CMK-KV"  #var.key_vault_name # Specify the name of your existing Key Vault
+  resource_group_name = local.effective_environment == "PROD" ? "PTAZSG-IAC-PROD-CMK-RG" : local.effective_environment == "UAT" ? "RG-AKS-AzSHCI" : "PTAZSG-IAC-DEV-CMK-RG"
+  name                = local.effective_environment == "PROD" ? "PTAZSG-1CMK-KV" : local.effective_environment == "UAT" ? "ptazsgkv01" : "PTAZSG-5CMK-KV"  #var.key_vault_name # Specify the name of your existing Key Vault
 }
 
 # Data source for the key in the Key Vault
