@@ -1,4 +1,4 @@
-applicationname                    = "vma"
+applicationname                    = "vmb"
 applicationtype = "APP"
 rg_prefix                          = "ptazsg"
 resource_group_name                = "PTAZSG-IAC-DEV-VMC-RG"
