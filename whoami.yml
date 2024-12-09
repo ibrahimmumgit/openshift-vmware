@@ -1,0 +1,12 @@
+---
+- name: Retrieve the logged-in username using whoami
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Execute whoami to get the logged-in user
+      command: whoami
+      register: logged_in_user
+
+    - name: Display the logged-in username
+      debug:
+        msg: "The logged-in username is: {{ logged_in_user.stdout }}"
