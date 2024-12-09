@@ -25,3 +25,18 @@ create_new_identity_access = false
 
 role_access      = "petronasgroup"
 custom_role_name = "Petronas Role Based Access control Administrator"
+
+project_code          = "03703"
+applicationid         = "AH"
+costcenter            = "00"
+dataclassification    = "Confidential"
+scaclassification     = "Standard"
+productowner          = "user@test.com"
+productsupport        = "user@test.com"
+businessowner         = "user@test.com"
+csbia_availability    = "Moderate"
+csbia_confidentiality = "Major"
+csbia_impactscore     = "Major"
+csbia_integrity       = "Moderate"
+businessopu_hcu       = "GTS"
+businessstream        = "PDnT"
