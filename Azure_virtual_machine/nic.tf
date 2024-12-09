@@ -22,7 +22,7 @@ data "azurerm_subnet" "example" {
 # Define all possible IPs in the subnet
 locals {
   subnet_cidr      = data.azurerm_subnet.example.address_prefix
-  private_ip_address = cidrhost(data.azurerm_subnet.example.address_prefixes[0], 11)
+  private_ip_address = cidrhost(data.azurerm_subnet.example.address_prefixes[0], 13)
   }
 
 
