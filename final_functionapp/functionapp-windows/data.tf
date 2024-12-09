@@ -60,15 +60,5 @@ data "azurerm_application_insights" "aai" {
 # Data source to retrieve the client configuration
 data "azurerm_client_config" "current" {}
 
-data "azuread_group" "group" {
-  count        = var.create_new_resource_group ? 1 : 0
-  display_name = var.role_access
-}
-
-data "azurerm_role_definition" "custom" {
-  count = var.create_new_resource_group && var.custom_role_name != null ? 1 : 0
-  name  = var.custom_role_name
-  scope = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
-}
 
 
