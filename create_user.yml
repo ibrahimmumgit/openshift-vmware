@@ -9,7 +9,7 @@
         username: "cmplabadmin"
         userpass_cyper: "{{ lookup('cypher','secret=secret/userpass') }}"
     - debug:        
-        msg: "{{ lookup('cypher','secret=secret/userpass') }}"
+        var: userpass_cyper
 
     - name: Add a user
       user:
