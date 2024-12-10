@@ -14,7 +14,7 @@
     - name: Add a user
       user:
         name: "{{ username }}"
-        password: "{{ userpass }}"
+        password: "{{ userpass_cyper }}"
         state: present    
    
     - name: Add sudoers users to wheel group
