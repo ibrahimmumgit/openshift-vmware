@@ -1,0 +1,70 @@
+# Create a Windows Virtual Machine with disk encryption, boot diagnostics, and a managed network interface
+resource "azurerm_windows_virtual_machine" "main" {
+  name                     = lower("ptsg${local.effective_environment == "PROD" ? "1${local.effective_applicationname}${local.effective_application_type[local.apptype]}${local.next_vm_name}" : local.effective_environment == "UAT" ? "4${local.effective_applicationname}${local.effective_application_type[local.apptype]}${local.next_vm_name}" : "5${local.effective_applicationname}${local.effective_application_type[local.apptype]}${local.next_vm_name}"}")
+  resource_group_name      = var.create_new_resource_group ? azurerm_resource_group.rg[0].name : data.azurerm_resource_group.rg[0].name
+  location                 = var.create_new_resource_group ? azurerm_resource_group.rg[0].location : data.azurerm_resource_group.rg[0].location
+  size                     = var.vm_size
+  admin_username           = "manager"
+  admin_password           = data.azurerm_key_vault_secret.admin_password.value
+  network_interface_ids    = [azurerm_network_interface.nic.id]
+  zone                     = var.zone
+  patch_mode               = "Manual"
+  enable_automatic_updates = false
+  license_type             = "Windows_Server"
+
+
+
+  # secure_boot_enabled = true
+  # vtpm_enabled        = true
+  # encryption_at_host_enabled = true
+
+  os_disk {
+    name = lower(
+      format(
+        "%s%s%s%s%s-OsDisk",
+        var.rg_prefix,
+        local.effective_environment == "PROD" ? "1" : local.effective_environment == "UAT" ? "4" : "5",
+        local.effective_applicationname,
+        local.effective_application_type[local.apptype],
+        local.next_vm_name
+      )
+    )
+    caching                = var.os_disk_caching
+    storage_account_type   = local.common_tags.CSBIA_Availability == "Severe" || local.common_tags.CSBIA_Availability == "Major" ? "Premium_ZRS" : "Standard_LRS"
+    disk_encryption_set_id = data.azurerm_disk_encryption_set.disk_encryption.id
+  }
+  #source_image_id = "/subscriptions/8a71ac81-04ed-4e9b-adea-c852951f4d69/resourceGroups/PTAZSG-CORE-VM-IMAGES-RG/providers/Microsoft.Compute/galleries/PTAZSG_3COC_VM_Images/images/${var.source_imagename}"
+  source_image_reference {
+    publisher = "MicrosoftSQLServer"
+    offer     = "SQL2019-WS2019"
+    sku       = "Enterprise"
+    version   = "latest"
+  }
+  identity {
+    type         = var.identity_access ? "SystemAssigned" : "SystemAssigned, UserAssigned"
+    identity_ids = var.identity_access ? null : [var.create_new_identity_access && var.identity_name == null ? azurerm_user_assigned_identity.uai[0].id : data.azurerm_user_assigned_identity.uai[0].id]
+  }
+  boot_diagnostics {
+  }
+
+  lifecycle {
+    prevent_destroy = false
+    ignore_changes = [
+      name
+    ]
+  }
+
+  # Tags for resource organization
+  tags = local.common_tags
+
+  depends_on = [
+    azurerm_resource_group.rg,
+    azurerm_managed_disk.vm_data_disk # Ensure data disk is created before VM attachment
+  ]
+}
+
+# Time delay to wait before destroying the VM to ensure proper cleanup
+resource "time_sleep" "vm" {
+  destroy_duration = "180s"                                 # Wait for 180 seconds before destroying the VM
+  depends_on       = [azurerm_windows_virtual_machine.main] # Ensure VM is created before starting the wait time
+}
