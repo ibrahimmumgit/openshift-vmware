@@ -1,5 +1,5 @@
 
-applicationname = "vmdd"
+applicationname = "rudsq"
 applicationtype = "DB"
 rg_prefix       = "ptazsg"
 #resource_group_name                = "PTAZSG-IAC-DEV-VMC-RG"
