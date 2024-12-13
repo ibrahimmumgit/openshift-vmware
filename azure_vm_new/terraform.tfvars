@@ -1,5 +1,5 @@
 
-applicationname = "rudsq"
+applicationname = "rudui"
 applicationtype = "DB"
 rg_prefix       = "ptazsg"
 #resource_group_name                = "PTAZSG-IAC-DEV-VMC-RG"
@@ -33,8 +33,8 @@ zone                 = 1
 #recovery_vault_name = "value" 
 
 # Identity and Access
-identity_access            = true #"UserAssigned"
-create_new_identity_access = false
+identity_access            = false #"UserAssigned"
+create_new_identity_access = true
 #identity_name                      = "ptazsg-5vmc-msi"
 
 
