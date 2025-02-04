@@ -64,7 +64,7 @@ data "azurerm_client_config" "current" {}
 
 # Data source to get the Subnet by its name in the Virtual Network
 data "azurerm_subnet" "vm_subnet" {
-  name                 = "default"
-  virtual_network_name = "ptsg-vnet"
-  resource_group_name  = "PTSG-TEST"
+  name                 = "aadds-subnet"
+  virtual_network_name = "aadds-vnet"
+  resource_group_name  = "RG-AKS-AzSHCI"
 }
