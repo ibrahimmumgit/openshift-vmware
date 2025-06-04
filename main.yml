@@ -4,16 +4,16 @@
   vars_files:
     - vars/main.yml
   tasks: 
-    # - name: Ignition Generation
-    #   include_role:
-    #     name: bastion_node
+    - name: Ignition Generation
+      include_role:
+        name: bastion_node
         
-    # - name: Node Deployment
-    #   include_role:
-    #     name: master_worker_node
-    - name: hostname
-      shell: hostname
-      register: host
+    - name: Node Deployment
+      include_role:
+        name: master_worker_node
+    # - name: hostname
+    #   shell: hostname
+    #   register: host
       
-    - debug:
-        msg: host
+    # - debug:
+    #     msg: host
