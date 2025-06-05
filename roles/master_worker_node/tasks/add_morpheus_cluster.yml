@@ -62,6 +62,8 @@
     apiurl: "https://api.lab.ocp.local:6443"
     apitoken: "{{ kubeadmin_token }}"
     bearer_token: "c333e41e-5e89-41e1-94f4-87600bdab69e"
+    morpheus_server: "hpe-cmp.helionit.io"
+    bearer_token: "ab8ec0c3-faca-4ff2-9a44-13b1411c11ff"
     
 - debug:
     var: kubeconfig
