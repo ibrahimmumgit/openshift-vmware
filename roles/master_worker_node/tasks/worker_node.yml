@@ -286,104 +286,109 @@
 #         start_connected: true
 #   loop: "{{ worker_nodes_list }}"
 
-- name: Wait for bootstrap to complete prior to starting workers
-  command: "{{ openshift_working_directory_path }}/bin/openshift-install --dir={{ openshift_working_directory_path }}/install-dir wait-for bootstrap-complete --log-level debug"
-  register: result_bootstrap
-  retries: 10
-  delay: 30
-  until: result_bootstrap.rc == 0
-  failed_when: false
+# - name: Wait for bootstrap to complete prior to starting workers
+#   command: "{{ openshift_working_directory_path }}/bin/openshift-install --dir={{ openshift_working_directory_path }}/install-dir wait-for bootstrap-complete --log-level debug"
+#   register: result_bootstrap
+#   retries: 10
+#   delay: 30
+#   until: result_bootstrap.rc == 0
+#   failed_when: false
 
-- name: Copy comment proxy
-  template:
-    src: "comment_proxy.cfg.j2"
-    dest: "/etc/haproxy/haproxy.cfg"
-    mode: '0664'
+# - name: Copy comment proxy
+#   template:
+#     src: "comment_proxy.cfg.j2"
+#     dest: "/etc/haproxy/haproxy.cfg"
+#     mode: '0664'
 
-- name: Restart the haproxy
-  become: yes
-  command: systemctl restart haproxy.service
+# - name: Restart the haproxy
+#   become: yes
+#   command: systemctl restart haproxy.service
 
-- name: Power-On the worker VMs
-  vmware_guest:
-    hostname: "{{ vcenter.host }}"
-    username: "{{ vcenter.username }}"
-    password: "{{ vcenter.password }}"
-    datacenter: "{{ vcenter.datacenter }}"
-    validate_certs: no
-    folder: "{{ vcenter.folder }}"
-    name: "{{ item.name }}"
-    state: poweredon
-  loop: "{{ worker_nodes_list }}"
-  loop_control:
-    label: "Power On {{ item.name }}"
+# - name: Power-On the worker VMs
+#   vmware_guest:
+#     hostname: "{{ vcenter.host }}"
+#     username: "{{ vcenter.username }}"
+#     password: "{{ vcenter.password }}"
+#     datacenter: "{{ vcenter.datacenter }}"
+#     validate_certs: no
+#     folder: "{{ vcenter.folder }}"
+#     name: "{{ item.name }}"
+#     state: poweredon
+#   loop: "{{ worker_nodes_list }}"
+#   loop_control:
+#     label: "Power On {{ item.name }}"
 
-- name: Power-Off the bootstrap VMs
-  vmware_guest:
-    hostname: "{{ vcenter.host }}"
-    username: "{{ vcenter.username }}"
-    password: "{{ vcenter.password }}"
-    datacenter: "{{ vcenter.datacenter }}"
-    validate_certs: no
-    folder: "{{ vcenter.folder }}"
-    name: "{{ item.name }}"
-    state: poweredoff
-  loop: "{{ bootstrap_nodes_list }}"
-  loop_control:
-    label: "Power Off {{ item.name }}"
+# - name: Power-Off the bootstrap VMs
+#   vmware_guest:
+#     hostname: "{{ vcenter.host }}"
+#     username: "{{ vcenter.username }}"
+#     password: "{{ vcenter.password }}"
+#     datacenter: "{{ vcenter.datacenter }}"
+#     validate_certs: no
+#     folder: "{{ vcenter.folder }}"
+#     name: "{{ item.name }}"
+#     state: poweredoff
+#   loop: "{{ bootstrap_nodes_list }}"
+#   loop_control:
+#     label: "Power Off {{ item.name }}"
 
-- name: Delete Bootstrap VM
-  vmware_guest:
-    hostname: "{{ vcenter.host }}"
-    username: "{{ vcenter.username }}"
-    password: "{{ vcenter.password }}"
-    datacenter: "{{ vcenter.datacenter }}"
-    validate_certs: no
-    folder: "{{ vcenter.folder }}"
-    name: "{{ item.name }}"
-    state: absent
-  loop: "{{ bootstrap_nodes_list }}"
-  loop_control:
-    label: "Delete {{ item.name }}"
+# - name: Delete Bootstrap VM
+#   vmware_guest:
+#     hostname: "{{ vcenter.host }}"
+#     username: "{{ vcenter.username }}"
+#     password: "{{ vcenter.password }}"
+#     datacenter: "{{ vcenter.datacenter }}"
+#     validate_certs: no
+#     folder: "{{ vcenter.folder }}"
+#     name: "{{ item.name }}"
+#     state: absent
+#   loop: "{{ bootstrap_nodes_list }}"
+#   loop_control:
+#     label: "Delete {{ item.name }}"
 
-- set_fact:
-    kubeconfig_path: "{{ openshift_working_directory_path }}"
+# - set_fact:
+#     kubeconfig_path: "{{ openshift_working_directory_path }}"
 
-- name: Wait for node-bootstrapper CSRs to appear
-  shell: >
-    {{ openshift_working_directory_path }}/bin/oc get csr -o json
-    --kubeconfig={{ kubeconfig_path }}/install-dir/auth/kubeconfig |
-    jq -r '.items[] | select(.status == {}) | .metadata.name'
-  register: result_csr
-  until: result_csr.stdout_lines | length == worker_nodes_list | length
-  retries: 60
-  delay: 60
-  ignore_errors: true
+- name: Approve CSRs and wait for nodes to be Ready
+  shell: |
+    kubeconfig="{{ kubeconfig_path }}/install-dir/auth/kubeconfig"
+    expected_nodes="{{ worker_nodes_list | map(attribute='name') | join(' ') }}"
+    timeout=600
+    elapsed=0
+    interval=10
 
-- name: Approve the node-bootstrapper CSRs
-  command: >
-    {{ openshift_working_directory_path }}/bin/oc adm certificate approve {{ item }}
-    --kubeconfig={{ kubeconfig_path }}/install-dir/auth/kubeconfig
-  loop: "{{ result_csr.stdout_lines }}"
+    while [ $elapsed -lt $timeout ]; do
+      echo "Checking for pending CSRs to approve..."
+      for csr in $(kubectl --kubeconfig=$kubeconfig get csr --no-headers 2>/dev/null | awk '/Pending/ {print $1}'); do
+        echo "Approving CSR: $csr"
+        kubectl --kubeconfig=$kubeconfig certificate approve "$csr"
+      done
 
-- name: Wait for system:node CSRs to appear
-  shell: >
-    {{ openshift_working_directory_path }}/bin/oc get csr -o json
-    --kubeconfig={{ kubeconfig_path }}/install-dir/auth/kubeconfig |
-    jq -r '.items[] | select(.status == {}) | .metadata.name'
-  register: result_system
-  until: result_system.stdout_lines | length == worker_nodes_list | length
-  retries: 60
-  delay: 60
-  ignore_errors: true
+      echo "Checking readiness of worker nodes..."
+      all_ready=true
+      for node in $expected_nodes; do
+        if ! kubectl --kubeconfig=$kubeconfig get node "$node" --no-headers 2>/dev/null | grep -q " Ready"; then
+          echo "Node $node is NOT Ready yet"
+          all_ready=false
+          break
+        fi
+      done
 
-- name: Approve the system:node CSRs
-  command: >
-    {{ openshift_working_directory_path }}/bin/oc adm certificate approve {{ item }}
-    --kubeconfig={{ kubeconfig_path }}/install-dir/auth/kubeconfig
-  loop: "{{ result_system.stdout_lines }}"
-  ignore_errors: true
+      if [ "$all_ready" = true ]; then
+        echo "All worker nodes are Ready"
+        exit 0
+      fi
 
+      sleep $interval
+      elapsed=$((elapsed + interval))
+    done
+
+    echo "Timeout reached before all worker nodes became Ready"
+    exit 1
+  register: csr_node_wait
+  changed_when: false
+  failed_when: csr_node_wait.rc != 0
+  
 - name: Wait for install complete
   command: >
     openshift-install wait-for install-complete
