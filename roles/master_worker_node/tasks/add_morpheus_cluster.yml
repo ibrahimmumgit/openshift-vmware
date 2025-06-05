@@ -70,7 +70,7 @@
     
 - name: Create External kuberenets cluster
   uri:
-    url:  https://morpheus-5-mgt.helionit.io/api/clusters
+    url: "https://{{ morpheus_server }}/api/clusters"
     method: post
     body_format: json
     # body:      
