@@ -86,7 +86,7 @@
         "id": 5
       },
       "layout": {
-        "id": 326
+        "id": 246
       },
       "server": {
         "name":  "{{ openshift_cluster_name }}",
@@ -96,7 +96,7 @@
           "serviceAccess": "{{ kubeconfig }}"
         },
         "plan": {
-          "id": 113,
+          "id": 70,
           "code": "external-default",
           "options": {
           }
