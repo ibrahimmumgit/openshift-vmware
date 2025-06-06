@@ -352,7 +352,7 @@
 - name: Approve CSRs and wait for nodes to be Ready
   shell: |
     kubeconfig="{{ kubeconfig_path }}/install-dir/auth/kubeconfig"
-    expected_nodes="{{ worker_nodes_list | map(attribute='name') | join(' ') }}"
+    expected_nodes="{{ worker_nodes_list | map(attribute='name') | map('regex_replace', '(.*)', '\\1.' ~ openshift_cluster_name ~ '.' ~ openshift_base_domain) | join(' ') }}"
     timeout=600
     elapsed=0
     interval=10
