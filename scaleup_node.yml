@@ -7,6 +7,7 @@
     ipaddr: "{{ morpheus['customOptions']['ipaddress'] }}"
     nodename: "{{  morpheus['customOptions']['nodename'] }}"
     cluster_name: "{{ morpheus['customOptions']['cluster_name'] }}"
+    openshift_base_domain: "ocp.local"
     # nodename: "ocp4-compute-3"
     kubeconfig_path: "{{ ansible_env.HOME }}/{{ cluster_name }}/install-dir/auth/kubeconfig"
     # ipaddr: "192.168.9.51"
@@ -109,32 +110,47 @@
       ansible.builtin.pause:
         minutes: 10  
         
-    - name: Wait for node-bootstraper csrs to approve
-      shell: "{{ openshift_working_directory_path }}/bin/oc get csr -o json --kubeconfig={{ kubeconfig_path }} | jq -r '.items[] | select(.status == {}) | .metadata.name'" # noqa 301 306
-      register: result_csr
-      until: result_csr['stdout_lines']|count >= 1
-      retries: 60
-      delay: 60
-      ignore_errors: true
+    - name: Approve CSRs and wait for worker nodes to be Ready
+      shell: |
+        kubeconfig="{{ kubeconfig_path }}/install-dir/auth/kubeconfig"
+        expected_nodes="{% for node in worker_nodes_list %}{{ node.name }}.{{ cluster_name }}.{{ openshift_base_domain }} {% endfor %}"
+        timeout=600
+        elapsed=0
+        interval=10
 
-    - name: Approve the csrs
-      command: "{{ openshift_working_directory_path }}/bin/oc adm certificate approve {{ item }} --kubeconfig={{ kubeconfig_path }}" # noqa 301
-      loop: "{{ result_csr['stdout_lines'] }}"
+        while [ $elapsed -lt $timeout ]; do
+          echo "Checking for pending CSRs to approve..."
+          for csr in $(kubectl --kubeconfig="$kubeconfig" get csr --no-headers 2>/dev/null | awk '/Pending/ {print $1}'); do
+            echo "Approving CSR: $csr"
+            kubectl --kubeconfig="$kubeconfig" certificate approve "$csr"
+          done
 
-    # - name: Approve all pending csrs
-    #   command: "{{ openshift_working_directory_path }}/bin/oc get csr -o json --kubeconfig={{ kubeconfig_path }} | jq -r '.items[] | select(.status == {} ) | .metadata.name' | xargs oc adm certificate approve" # noqa 301
-    - name: Wait for system:node csrs to approve
-      shell: "{{ openshift_working_directory_path }}/bin/oc get csr -o json --kubeconfig={{ kubeconfig_path }} | jq -r '.items[] | select(.status == {}) | .metadata.name'" # noqa 301 306
-      register: result_csr
-      until: result_csr['stdout_lines']|count >= 1
-      retries: 60
-      delay: 60
-      ignore_errors: true
+          echo "Checking readiness of worker nodes..."
+          all_ready=true
+          for node in $expected_nodes; do
+            if ! kubectl --kubeconfig="$kubeconfig" get node "$node" --no-headers 2>/dev/null | grep -q " Ready"; then
+              echo "Node $node is NOT Ready yet"
+              all_ready=false
+              break
+            fi
+          done
 
-    - name: Approve the csrs
-      command: "{{ openshift_working_directory_path }}/bin/oc adm certificate approve {{ item }} --kubeconfig={{ kubeconfig_path }}" # noqa 301
-      loop: "{{ result_csr['stdout_lines'] }}"
+          if [ "$all_ready" = true ]; then
+            echo "All worker nodes are Ready"
+            exit 0
+          fi
 
+          sleep $interval
+          elapsed=$((elapsed + interval))
+        done
+
+        echo "Timeout reached before all worker nodes became Ready"
+        exit 1
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}/install-dir/auth/kubeconfig"
+      register: csr_node_wait
+      changed_when: false
+      failed_when: csr_node_wait.rc != 0
 
 
       
