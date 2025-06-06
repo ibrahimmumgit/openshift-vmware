@@ -86,7 +86,7 @@
         "id": 5
       },
       "layout": {
-        "id": 251
+        "id": 326
       },
       "server": {
         "name":  "{{ openshift_cluster_name }}",
