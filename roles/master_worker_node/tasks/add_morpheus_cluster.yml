@@ -53,12 +53,20 @@
 - name: Display split result
   debug:
     var: kubeadmin_token
- 
+
+- name: Decode kubeconfig for modification
+  ansible.builtin.set_fact:
+  kubeconfig_decoded: "{{ kubeconfig_output.stdout | b64decode }}"
+
+- name: Format kubeconfig for JSON inclusion
+  ansible.builtin.set_fact:
+    kubeconfig_encoded: "{{ modified_kubeconfig | regex_replace('\"', '\\\"') }}"
+
 
 
 - name: set_fact the ignition_value
   set_fact:
-    kubeconfig: "{{ kubeconfig_output.stdout | regex_replace('\n', '')  }}"
+    kubeconfig: "{{ kubeconfig_encoded }}"
     apiurl: "https://api.lab.ocp.local:6443"
     apitoken: "{{ kubeadmin_token }}"
     bearer_token: "c333e41e-5e89-41e1-94f4-87600bdab69e"
