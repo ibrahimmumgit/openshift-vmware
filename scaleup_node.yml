@@ -48,7 +48,7 @@
         #networks:
         #- name: "{{ vcenter.network }}"
         wait_for_ip_address: no
-        advanced_settings: 
+        customvalues: 
           - key: "sched.cpu.latencySensitivity"
             value: "normal"
           - key: "guestinfo.afterburn.initrd.network-kargs"
@@ -60,7 +60,7 @@
           - key: "guestinfo.ignition.config.data"
             value: "{{ ignition_value }}"
           #   value: "ip={{ IPaddress }}::{{ vcenter.gateway  }}:{{ vcenter.netmask }}:{{ item.name }}:none:{{ vcenter.dns  }}"
-          
+
     - name: Fetch the node details
       vmware_guest_info:
         hostname: "{{ vcenter.host }}"
@@ -151,6 +151,46 @@
       register: csr_node_wait
       changed_when: false
       failed_when: csr_node_wait.rc != 0
+
+    - name: Reterives the cluster ID
+      uri:
+        url: https://{{ morpheus_server }}/api/clusters?name={{ openshift_cluster_name }}
+        method: Get
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ bearer_token }}"
+        return_content: true
+        validate_certs: false
+        status_code: 200
+        timeout: 30
+      register: webpage  
+    - debug:
+        var: webpage.content
+    - set_fact:
+        # cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"
+        size: "{{ (webpage.content | from_json).meta.size }}"
+      # when: webpage.rc == 0
+    - debug:
+        var: size    
+
+    - set_fact:
+        cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"       
+      when: size == "1"
+      
+    - name: Update the cluster
+      uri:
+        url: https://{{ morpheus_server }}/api/clusters/{{ cluster_id }}/refresh
+        method: PUT
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ bearer_token }}"
+        return_content: yes
+        validate_certs: false
+        status_code: 200
+        timeout: 30
+      register: webpage
+      when: size == "1"
+  
 
 
       
