@@ -4,6 +4,8 @@
     - vars/main.yml
   vars:
     # nodename: "{{  morpheus['customOptions']['nodename'] }}"
+    morpheus_server: "hpe-cmp.helionit.io"
+    bearer_token: "ab8ec0c3-faca-4ff2-9a44-13b1411c11ff"
     ipaddr: "{{ morpheus['customOptions']['ipaddress'] }}"
     nodename: "{{  morpheus['customOptions']['nodename'] }}"
     cluster_name: "{{ morpheus['customOptions']['cluster_name'] }}"
@@ -147,7 +149,7 @@
 
     - name: Reterives the cluster ID
       uri:
-        url: https://{{ morpheus_server }}/api/clusters?name={{ openshift_cluster_name }}
+        url: https://{{ morpheus_server }}/api/clusters?name={{ cluster_name }}
         method: Get
         headers:
           Content-Type: "application/json"
