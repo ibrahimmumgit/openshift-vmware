@@ -110,10 +110,10 @@
       ansible.builtin.pause:
         minutes: 10  
         
-    - name: Approve CSRs and wait for worker nodes to be Ready
+    - name: Approve CSR and wait for single worker node to be Ready
       shell: |
         kubeconfig="{{ kubeconfig_path }}/install-dir/auth/kubeconfig"
-        expected_nodes="{% for node in worker_nodes_list %}{{ node.name }}.{{ cluster_name }}.{{ openshift_base_domain }} {% endfor %}"
+        target_node="{{ nodename }}.{{ cluster_name }}.{{ openshift_base_domain }}"
         timeout=600
         elapsed=0
         interval=10
@@ -125,26 +125,19 @@
             kubectl --kubeconfig="$kubeconfig" certificate approve "$csr"
           done
 
-          echo "Checking readiness of worker nodes..."
-          all_ready=true
-          for node in $expected_nodes; do
-            if ! kubectl --kubeconfig="$kubeconfig" get node "$node" --no-headers 2>/dev/null | grep -q " Ready"; then
-              echo "Node $node is NOT Ready yet"
-              all_ready=false
-              break
-            fi
-          done
-
-          if [ "$all_ready" = true ]; then
-            echo "All worker nodes are Ready"
+          echo "Checking readiness of node: $target_node"
+          if kubectl --kubeconfig="$kubeconfig" get node "$target_node" --no-headers 2>/dev/null | grep -q " Ready"; then
+            echo "Node $target_node is Ready"
             exit 0
+          else
+            echo "Node $target_node is NOT Ready yet"
           fi
 
           sleep $interval
           elapsed=$((elapsed + interval))
         done
 
-        echo "Timeout reached before all worker nodes became Ready"
+        echo "Timeout reached before node $target_node became Ready"
         exit 1
       environment:
         KUBECONFIG: "{{ kubeconfig_path }}/install-dir/auth/kubeconfig"
