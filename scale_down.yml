@@ -3,8 +3,8 @@
   vars_files:
     - vars/main.yml
   vars:
-    morpheus_server: "morpheus-5-mgt.helionit.io"
-    bearer_token: "c333e41e-5e89-41e1-94f4-87600bdab69e"
+    morpheus_server: "hpe-cmp.helionit.io"
+    bearer_token: "ab8ec0c3-faca-4ff2-9a44-13b1411c11ff"
     nodename: "{{  morpheus['customOptions']['nodename'] }}"
     cluster_name: "{{ morpheus['customOptions']['cluster_name'] }}"
     # nodename: "ocp4-compute-3"
@@ -55,42 +55,42 @@
         name: "{{  nodename }}"
         state: absent
 
-    # - name: Reterives the cluster ID
-    #   uri:
-    #     url: https://{{ morpheus_server }}/api/clusters?name={{ openshift_cluster_name }}
-    #     method: Get
-    #     headers:
-    #       Content-Type: "application/json"
-    #       Authorization: "Bearer {{ bearer_token }}"
-    #     return_content: true
-    #     validate_certs: false
-    #     status_code: 200
-    #     timeout: 30
-    #   register: webpage  
-    # - debug:
-    #     var: webpage.content
-    # - set_fact:
-    #     # cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"
-    #     size: "{{ (webpage.content | from_json).meta.size }}"
-    #   # when: webpage.rc == 0
-    # - debug:
-    #     var: size    
+    - name: Reterives the cluster ID
+      uri:
+        url: https://{{ morpheus_server }}/api/clusters?name={{ openshift_cluster_name }}
+        method: Get
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ bearer_token }}"
+        return_content: true
+        validate_certs: false
+        status_code: 200
+        timeout: 30
+      register: webpage  
+    - debug:
+        var: webpage.content
+    - set_fact:
+        # cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"
+        size: "{{ (webpage.content | from_json).meta.size }}"
+      # when: webpage.rc == 0
+    - debug:
+        var: size    
 
-    # - set_fact:
-    #     cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"       
-    #   when: size == "1"
+    - set_fact:
+        cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"       
+      when: size == "1"
       
-    # - name: Update the cluster
-    #   uri:
-    #     url: https://{{ morpheus_server }}/api/clusters/{{ cluster_id }}
-    #     method: PUT
-    #     headers:
-    #       Content-Type: "application/json"
-    #       Authorization: "Bearer {{ bearer_token }}"
-    #     return_content: yes
-    #     validate_certs: false
-    #     status_code: 200
-    #     timeout: 30
-    #   register: webpage
-    #   when: size == "1"
+    - name: Update the cluster
+      uri:
+        url: https://{{ morpheus_server }}/api/clusters/{{ cluster_id }}
+        method: PUT
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ bearer_token }}"
+        return_content: yes
+        validate_certs: false
+        status_code: 200
+        timeout: 30
+      register: webpage
+      when: size == "1"
   
