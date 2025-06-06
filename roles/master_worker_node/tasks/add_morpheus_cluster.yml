@@ -79,11 +79,11 @@
     body: |-
       { "cluster": { "type": "external-kubernetes-cluster",
       "group": {
-        "id": 1143
+        "id": 51
       },
       "name": "{{ openshift_cluster_name }}" ,
       "cloud": {
-        "id": 235
+        "id": 5
       },
       "layout": {
         "id": 251
