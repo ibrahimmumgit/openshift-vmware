@@ -16,16 +16,4 @@
 - name: Restart the haproxy
   command: "systemctl restart haproxy.service" 
     
-- name: Power-On the worker VMs
-  vmware_guest:
-    hostname: "{{ vcenter.host }}"
-    username: "{{ vcenter.username }}"
-    password: "{{ vcenter.password }}"
-    datacenter: "{{ vcenter.datacenter }}"
-    validate_certs: no
-    folder: "{{ vcenter.folder }}"
-    name: "{{ item.name }}"
-    state: poweredon
-  loop: "{{ worker_nodes_list | default([]) }}"
-  loop_control:
-    label: "Power On {{ item.name }}"
+
