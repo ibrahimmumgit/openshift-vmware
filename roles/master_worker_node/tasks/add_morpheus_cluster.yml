@@ -10,6 +10,7 @@
 - name: Store Kubeconfig in a variable
   set_fact:
     kubeadminpassowrd: "{{ kubeadminpassword_output.stdout }}"
+    kubeconfig_path: "{{ openshift_working_directory_path }}/install-dir/auth/kubeconfig"
 
 # - name: Get OAuth Token
 #   uri:
@@ -62,13 +63,48 @@
   ansible.builtin.set_fact:
     kubeconfig_encoded: "{{ modified_kubeconfig | regex_replace('\"', '\\\"') }}"
 
+- name: Create service account morpheus
+  command: kubectl create serviceaccount morpheus --kubeconfig={{ kubeconfig_path }}
+  register: sa_create
+  ignore_errors: yes
+
+- name: Create clusterrolebinding morpheus-admin
+  command: >
+    kubectl create clusterrolebinding morpheus-admin
+    --clusterrole=cluster-admin
+    --serviceaccount=default:morpheus
+    --namespace=default
+    --kubeconfig={{ kubeconfig_path }}
+  register: crb_create
+  ignore_errors: yes
+
+- name: Get secret name for morpheus
+  command: kubectl get secrets --namespace=default --kubeconfig={{ kubeconfig_path }}
+  register: secrets_list
+
+- name: Extract secret name for morpheus token
+  set_fact:
+    secret_name: "{{ secrets_list.stdout_lines | select('match', '^morpheus') | list | first | regex_replace('\\s.*$', '') }}"
+
+- name: Get token from secret
+  command: kubectl describe secret {{ secret_name }} --namespace=default --kubeconfig={{ kubeconfig_path }}
+  register: secret_describe
+
+- name: Extract token and store in variable
+  set_fact:
+    morpheus_token: "{{ secret_describe.stdout | regex_search('^token:\\s*(.+)$', '\\1', multiline=True) }}"
+
+- name: Show token
+  debug:
+    msg: "Morpheus token is {{ morpheus_token }}"
+
 
 
 - name: set_fact the ignition_value
   set_fact:
     kubeconfig: "{{ kubeconfig_encoded }}"
     apiurl: "https://api.lab.ocp.local:6443"
-    apitoken: "{{ kubeadmin_token }}"
+    apitoken: "{{ morpheus_token }}"
     bearer_token: "c333e41e-5e89-41e1-94f4-87600bdab69e"
     morpheus_server: "hpe-cmp.helionit.io"
     bearer_token: "ab8ec0c3-faca-4ff2-9a44-13b1411c11ff"
