@@ -1,10 +1,21 @@
 ---
-- name: Wait for bootstrap to complete prior to starting workers
-  command: "{{ openshift_working_directory_path }}/bin/openshift-install --dir={{ openshift_working_directory_path }}/install-dir wait-for bootstrap-complete --log-level debug" # noqa 301
-  retries: 5
-  delay: 10
-  register: result_bootstrap
-  until: result_bootstrap.rc == 0
+# - name: Wait for bootstrap to complete prior to starting workers
+#   command: "{{ openshift_working_directory_path }}/bin/openshift-install --dir={{ openshift_working_directory_path }}/install-dir wait-for bootstrap-complete --log-level debug" # noqa 301
+#   retries: 5
+#   delay: 10
+#   register: result_bootstrap
+#   until: result_bootstrap.rc == 0
+
+- name: Wait for bootstrap to complete
+  shell: >
+    ./openshift-install wait-for bootstrap-complete --dir={{ openshift_working_directory_path }}/install-dir --log-level=info
+  args:
+    chdir: {{ openshift_working_directory_path }}/bin
+  register: bootstrap_status
+  failed_when: "'failed' in bootstrap_status.stderr or bootstrap_status.rc != 0"
+  retries: 30
+  delay: 60
+  until: bootstrap_status.rc == 0
 
     
 - name: Copy comment proxy
