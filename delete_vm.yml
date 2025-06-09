@@ -10,44 +10,44 @@
     openshift_working_directory_path: "{{ ansible_env.HOME }}/{{ cluster_name }}"
   tasks: 
    
-    # - name: Reterives the cluster ID
-    #   uri:
-    #     url: https://{{ morpheus_server }}/api/clusters?name={{ cluster_name }}
-    #     method: Get
-    #     headers:
-    #       Content-Type: "application/json"
-    #       Authorization: "Bearer {{ bearer_token }}"
-    #     return_content: true
-    #     validate_certs: false
-    #     status_code: 200
-    #     timeout: 30
-    #   register: webpage  
-    # - debug:
-    #     var: webpage.content
-    # - set_fact:
-    #     # cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"
-    #     size: "{{ (webpage.content | from_json).meta.size }}"
-    #   # when: webpage.rc == 0
-    # - debug:
-    #     var: size    
+    - name: Reterives the cluster ID
+      uri:
+        url: https://{{ morpheus_server }}/api/clusters?name={{ cluster_name }}
+        method: Get
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ bearer_token }}"
+        return_content: true
+        validate_certs: false
+        status_code: 200
+        timeout: 30
+      register: webpage  
+    - debug:
+        var: webpage.content
+    - set_fact:
+        # cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"
+        size: "{{ (webpage.content | from_json).meta.size }}"
+      # when: webpage.rc == 0
+    - debug:
+        var: size    
 
-    # - set_fact:
-    #     cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"       
-    #   when: size == "1"
+    - set_fact:
+        cluster_id: "{{ (webpage.content | from_json).clusters[0].id }}"       
+      when: size == "1"
       
-    # - name: Delete the cluster ID
-    #   uri:
-    #     url: https://{{ morpheus_server }}/api/clusters/{{ cluster_id }}?removeInstances=off&removeResources=on&preserveVolumes=off&releaseFloatingIps=on&releaseEIPs=on&force=off
-    #     method: DELETE
-    #     headers:
-    #       Content-Type: "application/json"
-    #       Authorization: "Bearer {{ bearer_token }}"
-    #     return_content: yes
-    #     validate_certs: false
-    #     status_code: 200
-    #     timeout: 30
-    #   register: webpage
-    #   when: size == "1"
+    - name: Delete the cluster ID
+      uri:
+        url: https://{{ morpheus_server }}/api/clusters/{{ cluster_id }}?removeInstances=off&removeResources=on&preserveVolumes=off&releaseFloatingIps=on&releaseEIPs=on&force=off
+        method: DELETE
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ bearer_token }}"
+        return_content: yes
+        validate_certs: false
+        status_code: 200
+        timeout: 30
+      register: webpage
+      when: size == "1"
 
 
     - name: Get OpenShift node names
