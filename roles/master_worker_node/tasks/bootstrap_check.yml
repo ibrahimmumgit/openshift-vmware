@@ -6,6 +6,30 @@
 #   register: result_bootstrap
 #   until: result_bootstrap.rc == 0
 
+# - name: Wait for OpenShift bootstrap to complete
+#   shell: >
+#     ./openshift-install wait-for bootstrap-complete --dir={{ openshift_working_directory_path }}/install-dir --log-level=info
+#   args:
+#     chdir: "{{ openshift_working_directory_path }}/bin"
+#   register: bootstrap_status
+#   retries: 30
+#   delay: 60
+#   until: bootstrap_status.rc == 0
+#   failed_when: >
+#     bootstrap_status.rc != 0 or
+#     ('failed' in bootstrap_status.stderr | default('')) or
+#     ('error' in bootstrap_status.stderr | default(''))
+
+- name: Wait for Kubernetes API to be available
+  uri:
+    url: "https://api.{{ cluster_name }}.{{ openshift_base_domain }}:6443/healthz"
+    method: GET
+    validate_certs: no
+  register: api_health
+  retries: 30
+  delay: 60
+  until: api_health.status == 200
+
 - name: Wait for OpenShift bootstrap to complete
   shell: >
     ./openshift-install wait-for bootstrap-complete --dir={{ openshift_working_directory_path }}/install-dir --log-level=info
