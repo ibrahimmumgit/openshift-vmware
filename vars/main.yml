@@ -45,7 +45,7 @@ master_nodes_list:
 worker_nodes_list:
   - { name: "ocp4-compute-1", ipaddr: "192.168.9.48"}
   - { name: "ocp4-compute-2", ipaddr: "192.168.9.49"}
-  - { name: "ocp4-compute-3", ipaddr: "192.168.9.50"}
+  # - { name: "ocp4-compute-3", ipaddr: "192.168.9.50"}
 
 
 # OpenShift node VM configurations
