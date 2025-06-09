@@ -1,4 +1,65 @@
 ---
+- name: Build expected_nodes string
+  set_fact:
+    expected_nodes: "{{ worker_nodes_list | map(attribute='name') | map('regex_replace', '^(.*)$', '\\1.' ~ openshift_cluster_name ~ '.' ~ openshift_base_domain) | join(' ') }}"
+- name: Approve CSRs and wait for worker nodes to be Ready
+  shell: |
+    set -euo pipefail
+
+    kubeconfig="{{ openshift_working_directory_path }}/install-dir/auth/kubeconfig"
+    expected_nodes="{{ worker_nodes_list | map(attribute='name') | map('regex_replace', '^(.*)$', '\\1.' ~ openshift_cluster_name ~ '.' ~ openshift_base_domain) | join(' ') }}"
+    timeout=600
+    elapsed=0
+    interval=10
+
+    echo "=============================================="
+    echo "[INFO] Starting CSR approval and node check..."
+    echo "[INFO] Kubeconfig: $kubeconfig"
+    echo "[INFO] Worker nodes: $expected_nodes"
+    echo "=============================================="
+
+    while [ "$elapsed" -lt "$timeout" ]; do
+      echo "[INFO] Checking for pending CSRs..."
+      for csr in $(kubectl --kubeconfig="$kubeconfig" get csr --no-headers 2>/dev/null | awk '/Pending/ {print $1}'); do
+        echo "[INFO] Approving CSR: $csr"
+        kubectl --kubeconfig="$kubeconfig" certificate approve "$csr"
+      done
+
+      echo "[INFO] Checking readiness of worker nodes..."
+      all_ready=true
+      for node in $expected_nodes; do
+        node_status=$(kubectl --kubeconfig="$kubeconfig" get node "$node" -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "Unknown")
+        if [ "$node_status" != "True" ]; then
+          echo "[WARN] Node $node is NOT Ready (Status: $node_status)"
+          all_ready=false
+          break
+        else
+          echo "[INFO] Node $node is Ready"
+        fi
+      done
+
+      if [ "$all_ready" = true ]; then
+        echo "=============================================="
+        echo "[SUCCESS] All worker nodes are Ready!"
+        echo "=============================================="
+        exit 0
+      fi
+
+      sleep "$interval"
+      elapsed=$((elapsed + interval))
+      echo "[INFO] Waiting... ($elapsed/$timeout seconds elapsed)"
+    done
+
+    echo "=============================================="
+    echo "[ERROR] Timeout reached before all worker nodes became Ready."
+    echo "=============================================="
+    exit 1
+  environment:
+    KUBECONFIG: "{{ openshift_working_directory_path }}/install-dir/auth/kubeconfig"
+  register: csr_node_wait
+  changed_when: false
+  failed_when: csr_node_wait.rc != 0
+
 - name: Approve CSRs and wait for worker nodes to be Ready
   shell: |
     kubeconfig="{{ openshift_working_directory_path }}/install-dir/auth/kubeconfig"

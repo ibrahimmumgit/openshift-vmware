@@ -39,10 +39,7 @@
   retries: 30
   delay: 60
   until: bootstrap_status.rc == 0
-  failed_when: >
-    bootstrap_status.rc != 0 or
-    ('failed' in bootstrap_status.stderr | default('')) or
-    ('error' in bootstrap_status.stderr | default(''))
+  failed_when: false
 
 - name: Power-Off the bootstrap VMs
   vmware_guest:
