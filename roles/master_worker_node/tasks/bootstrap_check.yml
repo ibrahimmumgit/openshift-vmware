@@ -22,7 +22,7 @@
 
 - name: Wait for Kubernetes API to be available
   uri:
-    url: "https://api.{{ cluster_name }}.{{ openshift_base_domain }}:6443/healthz"
+    url: "https://api.{{ openshift_cluster_name }}.{{ openshift_base_domain }}:6443/healthz"
     method: GET
     validate_certs: no
   register: api_health
