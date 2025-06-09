@@ -59,11 +59,11 @@
     - name: Extract and sanitize all VM names (remove domain)
       set_fact:
         vm_list: >-
-          {{ (oc_nodes.stdout | from_json) 
-            | attribute('items')
+          {{ (oc_nodes.stdout | from_json)['items']
             | map(attribute='metadata.name')
             | map('regex_replace', '\\..*$', '')
             | list }}
+            
     - name: Debug sanitized VM names
       debug:
         var: vm_list
