@@ -1,7 +1,7 @@
 ---
 - name: Approve CSRs and wait for worker nodes to be Ready
   shell: |
-    kubeconfig="{{ kubeconfig_path }}/install-dir/auth/kubeconfig"
+    kubeconfig="{{ openshift_working_directory_path }}/install-dir/auth/kubeconfig"
     expected_nodes="{% for node in worker_nodes_list %}{{ node.name }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }} {% endfor %}"
     timeout=600
     elapsed=0
@@ -36,7 +36,7 @@
     echo "Timeout reached before all worker nodes became Ready"
     exit 1
   environment:
-    KUBECONFIG: "{{ kubeconfig_path }}/install-dir/auth/kubeconfig"
+    KUBECONFIG: "{{ openshift_working_directory_path }}/install-dir/auth/kubeconfig"
   register: csr_node_wait
   changed_when: false
   failed_when: csr_node_wait.rc != 0
@@ -44,8 +44,10 @@
   
 - name: Wait for install complete
   command: >
-    openshift-install wait-for install-complete
-    --dir={{ kubeconfig_path }}/install-dir --log-level debug
+    ./openshift-install wait-for install-complete
+    --dir={{ openshift_working_directory_path }}/install-dir --log-level debug
+  args:
+    chdir: "{{ openshift_working_directory_path }}/bin"
   register: result_complete
   ignore_errors: true
 
