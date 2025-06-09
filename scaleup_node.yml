@@ -18,96 +18,96 @@
     # kubeconfig_path: '/root/lab/install-dir/auth/kubeconfig'
 
   tasks:
-    # - name: Get ignition_value file contents
-    #   command: "cat {{ worker_node.ignition_file_path }}"
-    #   register: ignition
+    - name: Get ignition_value file contents
+      command: "cat {{ worker_node.ignition_file_path }}"
+      register: ignition
     
-    # - name: set_fact the ignition_value
-    #   set_fact:
-    #     ignition_value: "{{ ignition.stdout }}"
+    - name: set_fact the ignition_value
+      set_fact:
+        ignition_value: "{{ ignition.stdout }}"
         
-    # - name: Clone from openshift cluster
-    #   vmware_guest:
-    #     hostname: "{{ vcenter.host }}"
-    #     username: "{{ vcenter.username }}"
-    #     password: "{{ vcenter.password }}"
-    #     validate_certs: no
-    #     datacenter: "{{ vcenter.datacenter }}"
-    #     folder: "{{ vcenter.folder }}"
-    #     cluster: "{{ vcenter.cluster }}"
-    #     template: "{{ openshift_template_name }}"
-    #     #name: "{{ item.name }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
-    #     name: "{{ nodename }}"
-    #     state: "poweredoff"
-    #     disk:
-    #     - datastore: "{{ vcenter.default_datastore }}"
-    #       type: "{{ worker_node.disk.type }}"
-    #       size_gb: "{{ worker_node.disk.size | default(120) }}"
-    #     hardware:
-    #       memory_mb: "{{ worker_node.ram | default(16384) }}"
-    #       memory_reservation_lock: true
-    #       memory_reservation: "{{ bootstrap_node.ram }}"
-    #       num_cpus: "{{ worker_node.cpus | default(4) }}"
-    #     #networks:
-    #     #- name: "{{ vcenter.network }}"
-    #     wait_for_ip_address: no
-    #     customvalues: 
-    #       - key: "sched.cpu.latencySensitivity"
-    #         value: "normal"
-    #       - key: "guestinfo.afterburn.initrd.network-kargs"
-    #         value: "ip={{ ipaddr }}::{{ vcenter.gateway }}:{{ vcenter.netmask }}:{{ nodename }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}:ens192:off:{{ vcenter.dns }}"               
-    #       - key: "disk.EnableUUID"
-    #         value: "TRUE"
-    #       - key: "guestinfo.ignition.config.data.encoding"
-    #         value: "base64"        
-    #       - key: "guestinfo.ignition.config.data"
-    #         value: "{{ ignition_value }}"
-    #       #   value: "ip={{ IPaddress }}::{{ vcenter.gateway  }}:{{ vcenter.netmask }}:{{ item.name }}:none:{{ vcenter.dns  }}"
+    - name: Clone from openshift cluster
+      vmware_guest:
+        hostname: "{{ vcenter.host }}"
+        username: "{{ vcenter.username }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: no
+        datacenter: "{{ vcenter.datacenter }}"
+        folder: "{{ vcenter.folder }}"
+        cluster: "{{ vcenter.cluster }}"
+        template: "{{ openshift_template_name }}"
+        #name: "{{ item.name }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
+        name: "{{ nodename }}"
+        state: "poweredoff"
+        disk:
+        - datastore: "{{ vcenter.default_datastore }}"
+          type: "{{ worker_node.disk.type }}"
+          size_gb: "{{ worker_node.disk.size | default(120) }}"
+        hardware:
+          memory_mb: "{{ worker_node.ram | default(16384) }}"
+          memory_reservation_lock: true
+          memory_reservation: "{{ bootstrap_node.ram }}"
+          num_cpus: "{{ worker_node.cpus | default(4) }}"
+        #networks:
+        #- name: "{{ vcenter.network }}"
+        wait_for_ip_address: no
+        customvalues: 
+          - key: "sched.cpu.latencySensitivity"
+            value: "normal"
+          - key: "guestinfo.afterburn.initrd.network-kargs"
+            value: "ip={{ ipaddr }}::{{ vcenter.gateway }}:{{ vcenter.netmask }}:{{ nodename }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}:ens192:off:{{ vcenter.dns }}"               
+          - key: "disk.EnableUUID"
+            value: "TRUE"
+          - key: "guestinfo.ignition.config.data.encoding"
+            value: "base64"        
+          - key: "guestinfo.ignition.config.data"
+            value: "{{ ignition_value }}"
+          #   value: "ip={{ IPaddress }}::{{ vcenter.gateway  }}:{{ vcenter.netmask }}:{{ item.name }}:none:{{ vcenter.dns  }}"
 
-    # - name: Fetch the node details
-    #   vmware_guest_info:
-    #     hostname: "{{ vcenter.host }}"
-    #     username: "{{ vcenter.username }}"
-    #     password: "{{ vcenter.password }}"
-    #     validate_certs: no
-    #     datacenter: "{{ vcenter.datacenter }}"
-    #     name: "{{ nodename }}"
-    #   register: result 
+    - name: Fetch the node details
+      vmware_guest_info:
+        hostname: "{{ vcenter.host }}"
+        username: "{{ vcenter.username }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: no
+        datacenter: "{{ vcenter.datacenter }}"
+        name: "{{ nodename }}"
+      register: result 
       
-    # - name: IP Details
-    #   debug:
-    #     msg: "ip={{ ipaddr }}::{{ vcenter.gateway }}:{{ vcenter.netmask }}:{{ nodename }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}:ens192:off:{{ vcenter.dns }}"   
+    - name: IP Details
+      debug:
+        msg: "ip={{ ipaddr }}::{{ vcenter.gateway }}:{{ vcenter.netmask }}:{{ nodename }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }}:ens192:off:{{ vcenter.dns }}"   
         
-    # - name: worker node mac address
-    #   debug:
-    #     msg: "{{ result.instance.hw_eth0.macaddress }}"
+    - name: worker node mac address
+      debug:
+        msg: "{{ result.instance.hw_eth0.macaddress }}"
       
-    # - name: Configure network for worker nodes
-    #   vmware_guest_network:
-    #     hostname: "{{ vcenter.host }}"
-    #     username: "{{ vcenter.username }}"
-    #     password: "{{ vcenter.password }}"
-    #     datacenter: "{{ vcenter.datacenter }}"
-    #     validate_certs: no
-    #     name: "{{ nodename }}"
-    #     networks:
-    #       - name: "{{ vcenter.network }}"
-    #         manual_mac: "{{ result.instance.hw_eth0.macaddress }}"
-    #         label: "Network adapter 1"
-    #         state: present
-    #         start_connected: true
+    - name: Configure network for worker nodes
+      vmware_guest_network:
+        hostname: "{{ vcenter.host }}"
+        username: "{{ vcenter.username }}"
+        password: "{{ vcenter.password }}"
+        datacenter: "{{ vcenter.datacenter }}"
+        validate_certs: no
+        name: "{{ nodename }}"
+        networks:
+          - name: "{{ vcenter.network }}"
+            manual_mac: "{{ result.instance.hw_eth0.macaddress }}"
+            label: "Network adapter 1"
+            state: present
+            start_connected: true
 
-    # - name: Power-On the worker VMs
-    #   vmware_guest:
-    #     hostname: "{{ vcenter.host }}"
-    #     username: "{{ vcenter.username }}"
-    #     password: "{{ vcenter.password }}"
-    #     datacenter: "{{ vcenter.datacenter }}"
-    #     validate_certs: no
-    #     folder: "{{ vcenter.folder }}"
-    #     name: "{{ nodename }}"
-    #     state: poweredon
-    #     wait_for_ip_address: yes
+    - name: Power-On the worker VMs
+      vmware_guest:
+        hostname: "{{ vcenter.host }}"
+        username: "{{ vcenter.username }}"
+        password: "{{ vcenter.password }}"
+        datacenter: "{{ vcenter.datacenter }}"
+        validate_certs: no
+        folder: "{{ vcenter.folder }}"
+        name: "{{ nodename }}"
+        state: poweredon
+        wait_for_ip_address: yes
 
     - name: Debug kubeconfig and node
       debug:
