@@ -60,48 +60,6 @@
   changed_when: false
   failed_when: csr_node_wait.rc != 0
 
-- name: Approve CSRs and wait for worker nodes to be Ready
-  shell: |
-    kubeconfig="{{ openshift_working_directory_path }}/install-dir/auth/kubeconfig"
-    expected_nodes="{% for node in worker_nodes_list %}{{ node.name }}.{{ openshift_cluster_name }}.{{ openshift_base_domain }} {% endfor %}"
-    timeout=600
-    elapsed=0
-    interval=10
-
-    while [ $elapsed -lt $timeout ]; do
-      echo "Checking for pending CSRs to approve..."
-      for csr in $(kubectl --kubeconfig="$kubeconfig" get csr --no-headers 2>/dev/null | awk '/Pending/ {print $1}'); do
-        echo "Approving CSR: $csr"
-        kubectl --kubeconfig="$kubeconfig" certificate approve "$csr"
-      done
-
-      echo "Checking readiness of worker nodes..."
-      all_ready=true
-      for node in $expected_nodes; do
-        if ! kubectl --kubeconfig="$kubeconfig" get node "$node" --no-headers 2>/dev/null | grep -q " Ready"; then
-          echo "Node $node is NOT Ready yet"
-          all_ready=false
-          break
-        fi
-      done
-
-      if [ "$all_ready" = true ]; then
-        echo "All worker nodes are Ready"
-        exit 0
-      fi
-
-      sleep $interval
-      elapsed=$((elapsed + interval))
-    done
-
-    echo "Timeout reached before all worker nodes became Ready"
-    exit 1
-  environment:
-    KUBECONFIG: "{{ openshift_working_directory_path }}/install-dir/auth/kubeconfig"
-  register: csr_node_wait
-  changed_when: false
-  failed_when: csr_node_wait.rc != 0
-
   
 - name: Wait for install complete
   command: >
