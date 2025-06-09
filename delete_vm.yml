@@ -69,17 +69,17 @@
         var: vm_list
 
 
-    - name: Destroy OpenShift cluster
-      command: >
-        ./openshift-install destroy cluster --dir={{ openshift_working_directory_path }}/install-di --log-level=infog
-      args:
-        chdir: "{{ openshift_working_directory_path }}/bin"
-      register: result_complete
-      ignore_errors: true
+    # - name: Destroy OpenShift cluster
+    #   command: >
+    #     ./openshift-install destroy cluster --dir={{ openshift_working_directory_path }}/install-di --log-level=infog
+    #   args:
+    #     chdir: "{{ openshift_working_directory_path }}/bin"
+    #   register: result_complete
+    #   ignore_errors: true
 
-    - name: Print destroy cluster output
-      debug:
-        var: destroy_output.stdout_lines
+    # - name: Print destroy cluster output
+    #   debug:
+    #     var: destroy_output.stdout_lines
 
 
     - name: Power-Off the openshift VMs
@@ -92,12 +92,12 @@
         folder: "{{ vcenter.folder }}"
         name: "{{ item }}"
         state: poweredoff
-      loop: "{{  vm_list }}"
+      loop: "{{ vm_list }}"
       loop_control:
-        label: "Power Off {{ item.name }}"
-      ignore_errors: True
-    
-    - name: Delete openshift VM
+        label: "Power Off {{ item }}"
+      ignore_errors: true
+
+    - name: Delete openshift VMs
       vmware_guest:
         hostname: "{{ vcenter.host }}"
         username: "{{ vcenter.username }}"
@@ -107,8 +107,7 @@
         folder: "{{ vcenter.folder }}"
         name: "{{ item }}"
         state: absent
-      loop: "{{  vm_list }}"
+      loop: "{{ vm_list }}"
       loop_control:
-        label: "Power On {{ item.name }}"
-      ignore_errors: True
-
+        label: "Delete {{ item }}"
+      ignore_errors: true
