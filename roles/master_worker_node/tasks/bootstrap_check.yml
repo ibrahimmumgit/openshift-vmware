@@ -20,6 +20,34 @@
     ('failed' in bootstrap_status.stderr | default('')) or
     ('error' in bootstrap_status.stderr | default(''))
 
+- name: Power-Off the bootstrap VMs
+  vmware_guest:
+    hostname: "{{ vcenter.host }}"
+    username: "{{ vcenter.username }}"
+    password: "{{ vcenter.password }}"
+    datacenter: "{{ vcenter.datacenter }}"
+    validate_certs: no
+    folder: "{{ vcenter.folder }}"
+    name: "{{ item.name }}"
+    state: poweredoff
+  loop: "{{ bootstrap_nodes_list }}"
+  loop_control:
+    label: "Power Off {{ item.name }}"
+
+- name: Delete Bootstrap VM
+  vmware_guest:
+    hostname: "{{ vcenter.host }}"
+    username: "{{ vcenter.username }}"
+    password: "{{ vcenter.password }}"
+    datacenter: "{{ vcenter.datacenter }}"
+    validate_certs: no
+    folder: "{{ vcenter.folder }}"
+    name: "{{ item.name }}"
+    state: absent
+  loop: "{{ bootstrap_nodes_list }}"
+  loop_control:
+    label: "Delete {{ item.name }}"
+
     
 - name: Copy comment proxy
   template:
