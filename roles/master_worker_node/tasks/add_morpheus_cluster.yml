@@ -102,7 +102,7 @@
 
 - name: set_fact the ignition_value
   set_fact:
-    kubeconfig: "{{ kubeconfig_encoded }}"
+    kubeconfig: "{{ kubeconfig_output.stdout | regex_replace('\n', '')  }}"
     apiurl: "https://api.lab.ocp.local:6443"
     apitoken: "{{ morpheus_token }}"
     bearer_token: "c333e41e-5e89-41e1-94f4-87600bdab69e"
