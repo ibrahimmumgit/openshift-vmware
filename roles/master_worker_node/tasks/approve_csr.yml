@@ -1,7 +1,18 @@
 ---
-- name: Build expected_nodes string
+- name: Set expected_nodes with FQDNs
   set_fact:
-    expected_nodes: "{{ worker_nodes_list | map(attribute='name') | map('regex_replace', '^(.*)$', '\\1.' ~ openshift_cluster_name ~ '.' ~ openshift_base_domain) | join(' ') }}"
+    expected_nodes: >-
+      {{ worker_nodes_list | map(attribute='name') |
+         map('regex_replace', '(.*)', '\\1.' ~ openshift_cluster_name ~ '.' ~ openshift_base_domain) |
+         list }}
+
+- debug:
+    var: expected_nodes
+
+- name: Stop the play
+  meta: end_play
+
+
 - name: Approve CSRs and wait for worker nodes to be Ready
   shell: |
     set -euo pipefail
