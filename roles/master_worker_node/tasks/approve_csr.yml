@@ -2,9 +2,7 @@
 - name: Set expected_nodes with FQDNs
   set_fact:
     expected_nodes: >-
-      {{ worker_nodes_list | map(attribute='name') |
-         map('regex_replace', '(.*)', '\\1.' ~ openshift_cluster_name ~ '.' ~ openshift_base_domain) |
-         list }}
+      {{ worker_nodes_list | map(attribute='name') | map('regex_replace', '(.*)', '\\g<1>.' ~ openshift_cluster_name ~ '.' ~ openshift_base_domain) | list }}
 
 - debug:
     var: expected_nodes
