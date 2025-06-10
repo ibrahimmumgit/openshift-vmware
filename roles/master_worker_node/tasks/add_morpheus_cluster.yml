@@ -61,7 +61,7 @@
 
 - name: Format kubeconfig for JSON inclusion
   ansible.builtin.set_fact:
-    kubeconfig_encoded: "{{ modified_kubeconfig | regex_replace('\"', '\\\"') }}"
+    kubeconfig_encoded: "{{ kubeconfig_decoded | regex_replace('\"', '\\\"') }}"
 
 - name: Create service account morpheus
   command: kubectl create serviceaccount morpheus --kubeconfig={{ kubeconfig_path }}
