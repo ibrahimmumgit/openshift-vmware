@@ -57,7 +57,7 @@
 
 - name: Decode kubeconfig for modification
   ansible.builtin.set_fact:
-  kubeconfig_decoded: "{{ kubeconfig_output.stdout | b64decode }}"
+    kubeconfig_decoded: "{{ kubeconfig_output.stdout | b64decode }}"
 
 - name: Format kubeconfig for JSON inclusion
   ansible.builtin.set_fact:
