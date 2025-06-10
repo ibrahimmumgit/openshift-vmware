@@ -2,7 +2,7 @@
 - name: Initialize expected_nodes as empty list
   set_fact:
     expected_nodes: []
-    
+
 - name: Append FQDNs to expected_nodes using loop (foreach equivalent)
   set_fact:
     expected_nodes: "{{ expected_nodes + [ item.name + '.' + openshift_cluster_name + '.' + openshift_base_domain ] }}"
@@ -11,8 +11,7 @@
 - debug:
     var: expected_nodes
 
-- name: Stop the play
-  meta: end_play
+
 
 
 - name: Approve CSRs and wait for worker nodes to be Ready
@@ -20,7 +19,7 @@
     set -euo pipefail
 
     kubeconfig="{{ openshift_working_directory_path }}/install-dir/auth/kubeconfig"
-    expected_nodes="{{ worker_nodes_list | map(attribute='name') | map('regex_replace', '^(.*)$', '\\1.' ~ openshift_cluster_name ~ '.' ~ openshift_base_domain) | join(' ') }}"
+    expected_nodes="{{ expected_nodes }}"
     timeout=600
     elapsed=0
     interval=10
