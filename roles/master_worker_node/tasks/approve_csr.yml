@@ -1,9 +1,13 @@
 ---
+- name: Initialize expected_nodes as empty list
+  set_fact:
+    expected_nodes: []
+    
 - name: Append FQDNs to expected_nodes using loop (foreach equivalent)
   set_fact:
     expected_nodes: "{{ expected_nodes + [ item.name + '.' + openshift_cluster_name + '.' + openshift_base_domain ] }}"
   loop: "{{ worker_nodes_list }}"
-  
+
 - debug:
     var: expected_nodes
 
