@@ -5,5 +5,5 @@
 # - include_tasks: worker_node_provision.yml
 # - include_tasks: bootstrap_check.yml
 # - include_tasks: worker_node_poweron.yml
-- include_tasks: approve_csr.yml
+# - include_tasks: approve_csr.yml
 - include_tasks: add_morpheus_cluster.yml
