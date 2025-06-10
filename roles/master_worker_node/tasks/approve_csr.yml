@@ -1,8 +1,7 @@
 ---
-- name: Set expected_nodes with FQDNs
+- name: Set expected_nodes with FQDNs (using list comprehension)
   set_fact:
-    expected_nodes: >-
-      {{ [item.name + '.' + openshift_cluster_name + '.' + openshift_base_domain for item in worker_nodes_list] }}
+    expected_nodes: "{{ [item.name + '.' + openshift_cluster_name + '.' + openshift_base_domain for item in worker_nodes_list] }}"
 
 - debug:
     var: expected_nodes
