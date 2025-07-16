@@ -1,22 +1,16 @@
 ---
 - name: This is to add user on instances
   hosts: all
-  become: yes
   tasks:
     - set_fact:
-        #userpass: "{{ morpheus['customOptions']['password'] }}"
-        #username: "{{ morpheus['customOptions']['username'] }}"
-        username: "cmplabadmin"
-        userpass_cyper: "{{ lookup('cypher','secret=secret/userpass') }}"
-    - debug:        
-        var: userpass_cyper
-
+        username: "{{ morpheus['customOptions']['opt_username'] }}"
+        password: "{{ morpheus['customOptions']['opt_password'] }}"
+        #userpass_cyper: "{{ lookup('cypher','secret=secret/userpass') }}"
     - name: Add a user
       user:
         name: "{{ username }}"
-        password: "{{ userpass_cyper }}"
+        password: "{{ password }}"
         state: present    
-   
     - name: Add sudoers users to wheel group
       user:
         name: "{{ username }}"
