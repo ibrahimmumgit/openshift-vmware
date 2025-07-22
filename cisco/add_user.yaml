@@ -1,0 +1,18 @@
+---
+- name: This is to add user on instances
+  hosts: localhost
+  tasks:
+    - name: Add a user
+      cisco.aci.aci_aaa_user:
+        host: "sandboxapicdc.cisco.com"
+        username: admin
+        password: "!v3G@!4@Y"
+        aaa_user: dag
+        aaa_password: "P@ssw0rd"
+        expiration: never
+        expires: false
+        email: dag@wieers.com
+        phone: 1-234-555-678
+        first_name: Dag
+        last_name: Wieers
+        state: present
