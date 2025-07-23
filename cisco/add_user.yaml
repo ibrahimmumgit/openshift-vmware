@@ -7,7 +7,7 @@
         host: sandboxapicdc.cisco.com
         username: admin
         password: "!v3G@!4@Y"
-        validate_certs: true
+        validate_certs: false
         aaa_user: dag
         aaa_password: "P@ssw0rd"
         expiration: never
