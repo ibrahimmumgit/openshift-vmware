@@ -1,4 +1,0 @@
----
-collections:
-  - name: cisco.aci
-    version: ">=1.0.0"
