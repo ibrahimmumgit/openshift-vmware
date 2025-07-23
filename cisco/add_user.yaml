@@ -4,9 +4,11 @@
   tasks:
     - name: Add a user
       cisco.aci.aci_aaa_user:
-        host: "sandboxapicdc.cisco.com"
-        username: admin
-        password: "!v3G@!4@Y"
+        provider:
+          host: sandboxapicdc.cisco.com
+          username: admin
+          password: "!v3G@!4@Y"
+          validate_certs: false
         aaa_user: dag
         aaa_password: "P@ssw0rd"
         expiration: never
@@ -16,4 +18,4 @@
         first_name: Dag
         last_name: Wieers
         state: present
-        validate_certs: false
+
