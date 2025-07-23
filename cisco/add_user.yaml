@@ -16,3 +16,4 @@
         first_name: Dag
         last_name: Wieers
         state: present
+        validate_certs: false
