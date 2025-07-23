@@ -8,11 +8,11 @@
         username: admin
         password: "!v3G@!4@Y"
         validate_certs: false
-        aaa_user: dag
+        aaa_user: test
         aaa_password: "P@ssw0rd"
         expiration: never
         expires: false
-        email: dag@wieers.com
+        email: test@wieers.com
         phone: 1-234-555-678
         first_name: Dag
         last_name: Wieers
