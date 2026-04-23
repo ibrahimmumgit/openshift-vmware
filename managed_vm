@@ -1,0 +1,81 @@
+- name: Convert discovered VMs to managed and install agent
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    morpheus_url: "https://hpe-cmp.helionit.io"
+    api_token: "a2ed7609-a3fc-4b95-8de1-32c28632fedc"
+    verify_ssl: false
+
+  tasks:
+
+  # 🔹 STEP 1: Get unmanaged VMs
+  - name: Fetch unmanaged VMs
+    uri:
+      url: "{{ morpheus_url }}/api/servers?managed=false"
+      method: GET
+      headers:
+        Authorization: "Bearer {{ api_token }}"
+      return_content: yes
+      validate_certs: "{{ verify_ssl }}"
+    register: vm_list
+
+  - name: Set VM list
+    set_fact:
+      vms: "{{ vm_list.json.servers | default([]) }}"
+
+  - name: Exit if no VMs found
+    debug:
+      msg: "No unmanaged VMs found"
+    when: vms | length == 0
+
+  - meta: end_play
+    when: vms | length == 0
+
+  # 🔹 STEP 2: Convert to managed
+  - name: Convert VM to managed
+    uri:
+      url: "{{ morpheus_url }}/api/servers/{{ item.id }}/convert-to-managed"
+      method: POST
+      headers:
+        Authorization: "Bearer {{ api_token }}"
+        Content-Type: "application/json"
+      body_format: json
+      body:
+        instanceTypeId: "{{ instance_type_id }}"
+        layoutId: "{{ layout_id }}"
+      status_code: 200
+      validate_certs: "{{ verify_ssl }}"
+    loop: "{{ vms }}"
+    loop_control:
+      label: "{{ item.name }}"
+    register: convert_results
+
+  # 🔹 STEP 3: Wait until managed
+  - name: Wait for VM to become managed
+    uri:
+      url: "{{ morpheus_url }}/api/servers/{{ item.item.id }}"
+      method: GET
+      headers:
+        Authorization: "Bearer {{ api_token }}"
+      validate_certs: "{{ verify_ssl }}"
+    register: wait_result
+    until: wait_result.json.server.managed == true
+    retries: 12
+    delay: 10
+    loop: "{{ convert_results.results }}"
+    loop_control:
+      label: "{{ item.item.name }}"
+
+  # 🔹 STEP 4: Install agent (Linux only)
+  - name: Install Morpheus agent on Linux VMs
+    shell: |
+      ssh -o StrictHostKeyChecking=no root@{{ item.externalIp | default(item.internalIp) }} \
+      "curl -k {{ morpheus_url }}/api/agents/install.sh | bash"
+    when:
+      - item.osType is defined
+      - "'windows' not in item.osType | lower"
+      - item.externalIp is defined or item.internalIp is defined
+    loop: "{{ vms }}"
+    loop_control:
+      label: "{{ item.name }}"
