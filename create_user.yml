@@ -2,16 +2,33 @@
 - name: This is to add user on instances
   hosts: all
   become: yes
+
   tasks:
+    - name: Show login user (before become)
+      command: whoami
+      become: no
+      register: login_user
+
+    - debug:
+        msg: "Login user (SSH user): {{ login_user.stdout }}"
+
     - set_fact:
         username: "{{ morpheus['customOptions']['opt_username'] }}"
         password: "{{ morpheus['customOptions']['opt_password'] }}"
-        #userpass_cyper: "{{ lookup('cypher','secret=secret/userpass') }}"
+
+    - name: Show user after become (should be root)
+      command: whoami
+      register: become_user
+
+    - debug:
+        msg: "User after become: {{ become_user.stdout }}"
+
     - name: Add a user
       user:
         name: "{{ username }}"
         password: "{{ password }}"
         state: present    
+
     - name: Add sudoers users to wheel group
       user:
         name: "{{ username }}"
